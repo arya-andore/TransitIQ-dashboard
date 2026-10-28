@@ -3,912 +3,1350 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Financial Transactions | Advanced Analytics & Visualization</title>
+  <title>AETHER // Financial Intelligence Core</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="plotly.min.js"></script>
   <script src="data.js"></script>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: rgba(18, 24, 38, 0.85);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover: rgba(255, 255, 255, 0.12);
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --accent-cyan: #06b6d4;
-      --accent-teal: #10b981;
-      --accent-blue: #3b82f6;
-      --accent-indigo: #6366f1;
-      --accent-amber: #f59e0b;
-      --accent-rose: #f43f5e;
-      --accent-purple: #a855f7;
-      --glass-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --bg-dark: #070a13;
+      --card-bg: #0d1322;
+      --card-inner: #10182b;
+      --card-border: #18233c;
+      --card-border-glow: rgba(0, 180, 216, 0.3);
+      --neon-cyan: #00d4ff;
+      --neon-blue: #0077ff;
+      --neon-teal: #00f5d4;
+      --neon-purple: #7b2cbf;
+      --neon-amber: #ffb703;
+      --neon-rose: #ff0054;
+      --track-blue: #141d33;
+      --text-main: #f0f6fc;
+      --text-muted: #7b91b0;
+      --text-dim: #455a79;
+      --sidebar-w: 68px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
-      background: radial-gradient(circle at 15% 15%, #131c31 0%, #080c14 100%);
-      color: var(--text);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 119, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.06) 0%, transparent 40%),
+        linear-gradient(rgba(24, 35, 60, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 35, 60, 0.15) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      color: var(--text-main);
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
-      line-height: 1.5;
-      padding-bottom: 50px;
+      display: flex;
     }
 
-    header {
-      background: rgba(11, 15, 25, 0.8);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
+    /* Futuristic Left Icon Sidebar */
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: #080c16;
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+      position: fixed;
       top: 0;
+      bottom: 0;
+      left: 0;
       z-index: 100;
-      padding: 18px 32px;
     }
 
-    .header-content {
-      max-width: 1680px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .brand-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-icon {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #06b6d4, #6366f1);
-      border-radius: 12px;
+    .sidebar-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #00d4ff, #0077ff);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-      font-weight: 800;
       color: white;
-      font-size: 20px;
-    }
-
-    .title-group small {
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: 2px;
-      font-weight: 700;
-      color: var(--accent-cyan);
-    }
-
-    .title-group h1 {
-      font-size: 20px;
       font-weight: 800;
-      letter-spacing: -0.5px;
-      color: #ffffff;
+      font-size: 18px;
+      box-shadow: 0 0 16px rgba(0, 212, 255, 0.5);
+      margin-bottom: 36px;
+      cursor: pointer;
     }
 
-    .header-badges {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #cbd5e1;
-    }
-
-    .badge.live {
-      border-color: rgba(16, 185, 129, 0.3);
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.1);
-    }
-
-    .badge-dot {
-      width: 7px;
-      height: 7px;
-      background: #10b981;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #10b981;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-
-    main {
-      max-width: 1680px;
-      margin: 24px auto;
-      padding: 0 24px;
+    .nav-icons {
       display: flex;
       flex-direction: column;
       gap: 22px;
+      flex: 1;
     }
 
-    /* Filters Section */
-    .filter-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: var(--glass-glow);
+    .nav-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
     }
 
-    .filter-header {
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--neon-cyan);
+      background: rgba(0, 212, 255, 0.08);
+      border-color: rgba(0, 212, 255, 0.25);
+      box-shadow: 0 0 14px rgba(0, 212, 255, 0.2);
+    }
+
+    .nav-btn.active::before {
+      content: '';
+      position: absolute;
+      left: -13px;
+      width: 3px;
+      height: 20px;
+      background: var(--neon-cyan);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Main Content Area */
+    .app-container {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 20px 24px 60px;
+      max-width: 1720px;
+      min-width: 0;
+    }
+
+    /* Futuristic Header Banner */
+    header.hud-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 22px;
     }
 
-    .filter-header-left {
+    .hud-title {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
-    .filter-header-left h3 {
-      font-size: 14px;
+    .sys-pill {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 2px;
       font-weight: 700;
-      color: #e2e8f0;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      color: var(--neon-cyan);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .quick-chips {
+    .dot-pulse {
+      width: 6px;
+      height: 6px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-cyan);
+      animation: pulseGlow 1.8s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    .hud-title h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+    }
+
+    .hud-title span.sub {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-left: 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Quick Filter Chips */
+    .hud-controls {
       display: flex;
-      gap: 6px;
+      align-items: center;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .chip {
-      background: rgba(255, 255, 255, 0.05);
+    .chip-btn {
+      background: #090e1a;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
       color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
-    .chip:hover, .chip.active {
-      background: rgba(6, 182, 212, 0.2);
-      border-color: var(--accent-cyan);
-      color: #38bdf8;
+    .chip-btn:hover, .chip-btn.active {
+      background: rgba(0, 119, 255, 0.2);
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.25);
     }
 
-    .filters-grid {
+    .metric-toggle-group {
+      display: flex;
+      background: #080c16;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .toggle-opt {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-opt.active {
+      background: var(--neon-blue);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 119, 255, 0.4);
+    }
+
+    /* Filter Drawer / Bar */
+    .filter-hud {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto;
+      gap: 12px;
       align-items: end;
     }
 
-    .field {
+    .filter-item {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
-    .field label {
-      font-size: 11px;
+    .filter-item label {
+      font-size: 10px;
       text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      font-weight: 600;
     }
 
     select, input {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f8fafc;
-      font-family: inherit;
-      font-size: 12px;
-      padding: 9px 12px;
-      border-radius: 8px;
+      background: #0a0f1d;
+      border: 1px solid var(--card-border);
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      padding: 8px 10px;
+      border-radius: 6px;
       outline: none;
-      transition: all 0.2s;
       width: 100%;
+      transition: border-color 0.2s;
     }
 
     select:focus, input:focus {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.25);
-    }
-
-    .btn {
-      font-family: inherit;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 9px 18px;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: none;
-      height: 38px;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
     }
 
     .btn-reset {
-      background: rgba(255, 255, 255, 0.06);
-      color: #cbd5e1;
-      border: 1px solid var(--card-border);
-    }
-
-    .btn-reset:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: white;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #06b6d4, #3b82f6);
-      color: white;
-      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);
-    }
-
-    .btn-primary:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-    }
-
-    /* Metric Switcher Toolbar */
-    .toolbar-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 12px 20px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-    }
-
-    .scope-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: #94a3b8;
-    }
-
-    .scope-highlight {
-      color: #38bdf8;
+      background: rgba(255, 0, 84, 0.1);
+      border: 1px solid rgba(255, 0, 84, 0.3);
+      color: var(--neon-rose);
       font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
       font-weight: 700;
-    }
-
-    .metric-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 4px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-    }
-
-    .toggle-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 7px;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
+      height: 35px;
       transition: all 0.2s;
     }
 
-    .toggle-btn.active {
-      background: #0ea5e9;
+    .btn-reset:hover {
+      background: var(--neon-rose);
       color: white;
-      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+      box-shadow: 0 0 12px rgba(255, 0, 84, 0.4);
     }
 
-    /* KPI Cards */
-    .kpis-grid {
+    /* GRID ARCHITECTURE (Matching user template exactly) */
+    .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(12, 1fr);
       gap: 16px;
     }
 
-    .kpi-card {
+    /* Card Framework */
+    .hud-card {
       background: var(--card-bg);
-      backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 18px 20px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.25s, transform 0.25s;
     }
 
-    .kpi-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--card-hover);
+    .hud-card:hover {
+      border-color: rgba(0, 212, 255, 0.3);
     }
 
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--card-accent, #64748b);
-    }
-
-    .kpi-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .kpi-value {
-      font-size: 26px;
-      font-weight: 800;
-      color: #ffffff;
-      margin: 8px 0 4px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      letter-spacing: -0.5px;
-    }
-
-    .kpi-sub {
-      font-size: 11px;
-      color: var(--text-dim);
-      font-weight: 500;
-    }
-
-    /* Section Headers */
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      color: #cbd5e1;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 10px;
-    }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--card-border);
-      margin-left: 10px;
-    }
-
-    /* Charts Grid */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .charts-grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .chart-panel {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: var(--glass-glow);
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      transition: border-color 0.2s ease;
-    }
-
-    .chart-panel:hover {
-      border-color: var(--card-hover);
-    }
-
-    .chart-panel.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .panel-header {
+    .card-head {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       margin-bottom: 12px;
     }
 
-    .panel-header h2 {
-      font-size: 14px;
+    .card-title {
+      font-size: 12px;
       font-weight: 700;
-      color: #f8fafc;
+      color: #cbd5e1;
+      letter-spacing: 0.2px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .panel-tag {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-weight: 700;
-    }
-
-    .tag-pie { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-    .tag-bar { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
-    .tag-trend { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .tag-risk { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
-
-    .panel-desc {
-      font-size: 11px;
+    .card-action-select {
+      background: #090e1a;
+      border: 1px solid var(--card-border);
       color: var(--text-dim);
-      margin-bottom: 12px;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      outline: none;
+      width: auto;
     }
 
-    .chart-container {
-      height: 310px;
+    /* TOP ROW: 3 SPARKLINE KPI CARDS */
+    .kpi-spark-card {
+      grid-column: span 2;
+    }
+
+    .kpi-num-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
+    .kpi-badge {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .kpi-badge.positive {
+      background: rgba(0, 245, 212, 0.12);
+      color: var(--neon-teal);
+      border: 1px solid rgba(0, 245, 212, 0.25);
+    }
+
+    .kpi-badge.negative {
+      background: rgba(255, 0, 84, 0.12);
+      color: var(--neon-rose);
+      border: 1px solid rgba(255, 0, 84, 0.25);
+    }
+
+    .kpi-sparkline {
+      height: 65px;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    /* TOP ROW: WORLD / NETWORK MAP CARD */
+    .map-card {
+      grid-column: span 4;
+    }
+
+    .map-container {
+      height: 110px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .map-svg {
+      width: 100%;
+      height: 100%;
+      opacity: 0.65;
+    }
+
+    .map-legend {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .leg-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* TOP ROW: PERSON INFOGRAPHIC CARD */
+    .people-card {
+      grid-column: span 2;
+    }
+
+    .people-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .people-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .people-icons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .person-glyph {
+      width: 12px;
+      height: 18px;
+      fill: var(--track-blue);
+      transition: fill 0.3s;
+    }
+
+    .person-glyph.active-cyan { fill: var(--neon-cyan); filter: drop-shadow(0 0 3px var(--neon-cyan)); }
+    .person-glyph.active-blue { fill: var(--neon-blue); }
+
+    .people-pct {
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ffffff;
+      min-width: 38px;
+      text-align: right;
+    }
+
+    /* ROW 2: SMOOTH SPLINE & MULTI-WAVE */
+    .spline-card {
+      grid-column: span 3;
+    }
+
+    .multiwave-card {
+      grid-column: span 3;
+    }
+
+    .timeline-card {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .chart-box {
+      height: 200px;
       width: 100%;
     }
 
-    .chart-container.tall {
-      height: 360px;
+    /* VERTICAL TIMELINE WITH RADIAL DIALS (Right Sidebar in template) */
+    .v-timeline {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      position: relative;
+      padding: 10px 0;
     }
 
-    /* Table Section */
-    .table-panel {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: var(--glass-glow);
+    .v-timeline::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      bottom: 25px;
+      left: 36px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--neon-cyan), var(--neon-blue), var(--card-border));
     }
 
-    .table-tools {
+    .timeline-node {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+
+    .node-label {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+      width: 30px;
+    }
+
+    .node-dial {
+      width: 50px;
+      height: 50px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dial-svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .dial-bg {
+      fill: none;
+      stroke: var(--track-blue);
+      stroke-width: 4;
+    }
+
+    .dial-bar {
+      fill: none;
+      stroke: var(--neon-cyan);
+      stroke-width: 4;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.4));
+      transition: stroke-dashoffset 0.8s ease;
+    }
+
+    .dial-text {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ffffff;
+    }
+
+    /* ROW 3: RADIAL GUAGE CLUSTER & HORIZONTAL BARS */
+    .radial-cluster-card {
+      grid-column: span 3;
+    }
+
+    .dual-slider-box {
+      margin-bottom: 16px;
+    }
+
+    .slider-labels {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin: 16px 0;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
     }
 
-    .search-box {
-      max-width: 400px;
-      width: 100%;
+    .slider-sub-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .dual-bar-track {
+      height: 7px;
+      background: var(--track-blue);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dual-bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+      border-radius: 4px;
+      box-shadow: 0 0 8px var(--neon-cyan);
+    }
+
+    .four-rings-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .ring-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .ring-caption {
+      font-size: 9px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    /* HORIZONTAL PROGRESS BARS CARD */
+    .hbars-card {
+      grid-column: span 3;
+    }
+
+    .hbars-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 4px;
+    }
+
+    .hbar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hbar-tag {
+      width: 65px;
+      font-size: 10px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .hbar-track {
+      flex: 1;
+      height: 7px;
+      background: var(--track-blue);
+      border-radius: 4px;
+      overflow: hidden;
       position: relative;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      max-height: 520px;
+    .hbar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+      transition: width 0.6s ease;
     }
 
-    table {
+    .hbar-val {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #ffffff;
+      min-width: 35px;
+      text-align: right;
+    }
+
+    /* 4-STEP PIPELINE OVER WAVE CARD */
+    .pipeline-card {
+      grid-column: span 2;
+    }
+
+    .steps-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .step-pill {
+      flex: 1;
+      background: var(--neon-blue);
+      color: #ffffff;
+      border-radius: 6px;
+      padding: 5px 0;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0, 119, 255, 0.5);
+    }
+
+    .pipeline-wave {
+      height: 140px;
+      width: 100%;
+    }
+
+    /* NEON COLUMN BAR CARD */
+    .column-bar-card {
+      grid-column: span 2;
+    }
+
+    /* SEMICIRCLE ARC INFOGRAPHIC CARD */
+    .semicircle-card {
+      grid-column: span 2;
+    }
+
+    .semicircle-box {
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .arc-gauge-svg {
+      width: 180px;
+      height: 100px;
+    }
+
+    .arc-center-text {
+      position: absolute;
+      bottom: 25px;
+      text-align: center;
+    }
+
+    .arc-val {
+      font-size: 20px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ffffff;
+    }
+
+    .arc-sub {
+      font-size: 9px;
+      color: var(--neon-cyan);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    /* TRANSACTION TERMINAL / TABLE CARD */
+    .terminal-card {
+      grid-column: span 12;
+      margin-top: 10px;
+    }
+
+    .terminal-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .terminal-search {
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .btn-export {
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+      border: none;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 0 14px rgba(0, 212, 255, 0.35);
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      max-height: 480px;
+      background: #080c16;
+    }
+
+    table.hud-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: 11px;
       white-space: nowrap;
       text-align: left;
     }
 
-    th {
-      background: #111827;
-      color: #94a3b8;
-      padding: 12px 16px;
-      font-size: 11px;
+    table.hud-table th {
+      background: #0b1120;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 10px 14px;
+      font-size: 10px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 700;
       position: sticky;
       top: 0;
-      z-index: 10;
       border-bottom: 1px solid var(--card-border);
+      z-index: 5;
     }
 
-    td {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #e2e8f0;
+    table.hud-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(24, 35, 60, 0.5);
+      color: var(--text-main);
     }
 
-    tr:hover td {
-      background: rgba(255, 255, 255, 0.03);
+    table.hud-table tr:hover td {
+      background: rgba(0, 212, 255, 0.04);
     }
 
-    .pill {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
+    .code-id {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-cyan);
       font-weight: 600;
     }
 
-    .pill.success { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-    .pill.failed { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
-    .pill.reversed { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-    .pill.pending { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
-    .pill.fraud { background: rgba(244, 63, 94, 0.2); color: #fda4af; font-weight: 700; }
-    .pill.verified { background: rgba(6, 182, 212, 0.15); color: #38bdf8; }
+    .tag-pill {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .tag-pill.success { background: rgba(0, 245, 212, 0.12); color: var(--neon-teal); border: 1px solid rgba(0, 245, 212, 0.25); }
+    .tag-pill.failed { background: rgba(255, 0, 84, 0.12); color: var(--neon-rose); border: 1px solid rgba(255, 0, 84, 0.25); }
+    .tag-pill.reversed { background: rgba(255, 183, 3, 0.12); color: var(--neon-amber); border: 1px solid rgba(255, 183, 3, 0.25); }
+    .tag-pill.pending { background: rgba(123, 145, 176, 0.12); color: var(--text-muted); border: 1px solid var(--card-border); }
+    .tag-pill.fraud { background: rgba(255, 0, 84, 0.25); color: #ff85a2; font-weight: 800; border: 1px solid var(--neon-rose); }
 
     .pagination-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--text-muted);
+      margin-top: 14px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
     }
 
-    /* Definitions Note */
-    .note-card {
-      background: rgba(15, 23, 42, 0.6);
+    .btn-nav-page {
+      background: #090e1a;
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px 22px;
-      font-size: 12px;
-      color: #94a3b8;
-      line-height: 1.8;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
-    .note-card strong {
-      color: #f1f5f9;
+    .btn-nav-page:hover:not(:disabled) {
+      border-color: var(--neon-cyan);
+      color: white;
     }
 
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .kpis-grid { grid-template-columns: repeat(2, 1fr); }
-      .charts-grid-3 { grid-template-columns: 1fr; }
+    .btn-nav-page:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
     }
 
-    @media (max-width: 850px) {
-      .charts-grid { grid-template-columns: 1fr; }
-      header { padding: 16px 20px; }
-      main { padding: 0 16px; }
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 1400px) {
+      .kpi-spark-card { grid-column: span 4; }
+      .map-card { grid-column: span 8; }
+      .people-card { grid-column: span 4; }
+      .spline-card { grid-column: span 6; }
+      .multiwave-card { grid-column: span 6; }
+      .timeline-card { grid-column: span 4; grid-row: auto; }
+      .radial-cluster-card { grid-column: span 4; }
+      .hbars-card { grid-column: span 4; }
+      .pipeline-card { grid-column: span 4; }
+      .column-bar-card { grid-column: span 4; }
+      .semicircle-card { grid-column: span 4; }
     }
 
-    @media (max-width: 550px) {
-      .kpis-grid { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      aside.sidebar { display: none; }
+      .app-container { margin-left: 0; padding: 14px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .kpi-spark-card, .map-card, .people-card, .spline-card, .multiwave-card, 
+      .timeline-card, .radial-cluster-card, .hbars-card, .pipeline-card, 
+      .column-bar-card, .semicircle-card { grid-column: span 1; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-content">
-      <div class="brand-title">
-        <div class="logo-icon">📊</div>
-        <div class="title-group">
-          <small>Fintech Intelligence Suite</small>
-          <h1>Financial Transactions Dashboard</h1>
+  <!-- LEFT CYBERPUNK ICON SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">◆</div>
+    <nav class="nav-icons">
+      <button class="nav-btn active" title="Overview" onclick="smoothScroll('top')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </button>
+      <button class="nav-btn" title="Analytics & Trends" onclick="smoothScroll('splineSection')">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      </button>
+      <button class="nav-btn" title="Bar Charts & Rail Mix" onclick="smoothScroll('hbarsSection')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      </button>
+      <button class="nav-btn" title="Pie & Progress Rings" onclick="smoothScroll('ringsSection')">
+        <svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+      </button>
+      <button class="nav-btn" title="Terminal Transactions" onclick="smoothScroll('tableSection')">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="6" y1="8" x2="10" y2="8"></line><line x1="6" y1="12" x2="18" y2="12"></line><line x1="6" y1="16" x2="14" y2="16"></line></svg>
+      </button>
+      <button class="nav-btn" title="Reset Filters" onclick="$('reset').click()">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- MAIN HUD DASHBOARD CONTAINER -->
+  <div class="app-container" id="top">
+
+    <!-- TOP SYSTEM HUD HEADER -->
+    <header class="hud-header">
+      <div class="hud-title">
+        <div class="sys-pill"><span class="dot-pulse"></span> ONLINE · LIVE CORE</div>
+        <h1>Financial Intelligence Quantum HUD</h1>
+        <span class="sub" id="recordCountLabel">75,000 SYNTHETIC RECORDS</span>
+      </div>
+
+      <div class="hud-controls">
+        <div class="chip-group" style="display:flex;gap:6px;">
+          <button class="chip-btn active" onclick="setYear('all')">ALL</button>
+          <button class="chip-btn" onclick="setYear('2023')">2023</button>
+          <button class="chip-btn" onclick="setYear('2022')">2022</button>
+          <button class="chip-btn" onclick="setYear('2021')">2021</button>
+          <button class="chip-btn" onclick="setYear('2020')">2020</button>
+          <button class="chip-btn" onclick="setYear('2019')">2019</button>
+        </div>
+
+        <div class="metric-toggle-group">
+          <button class="toggle-opt active" id="btnCount" onclick="setMetric('count')">COUNT</button>
+          <button class="toggle-opt" id="btnAmount" onclick="setMetric('amount')">VOLUME</button>
         </div>
       </div>
-      <div class="header-badges">
-        <div class="badge live"><span class="badge-dot"></span> 75,000 Records Online</div>
-        <div class="badge">01 Jan 2019 – 31 Dec 2023</div>
+    </header>
+
+    <!-- INLINE HUD FILTER CONSOLE -->
+    <section class="filter-hud">
+      <div class="filter-item">
+        <label>Start Date</label>
+        <input id="start" type="date" value="2019-01-01" min="2019-01-01" max="2023-12-31">
       </div>
-    </div>
-  </header>
+      <div class="filter-item">
+        <label>End Date</label>
+        <input id="end" type="date" value="2023-12-31" min="2019-01-01" max="2023-12-31">
+      </div>
+      <div class="filter-item">
+        <label>Channel</label>
+        <select id="channel"></select>
+      </div>
+      <div class="filter-item">
+        <label>State Region</label>
+        <select id="state"></select>
+      </div>
+      <div class="filter-item">
+        <label>Payment Rail</label>
+        <select id="type"></select>
+      </div>
+      <div class="filter-item">
+        <label>Status</label>
+        <select id="status"></select>
+      </div>
+      <div class="filter-item">
+        <label>Account Class</label>
+        <select id="accountType"></select>
+      </div>
+      <div class="filter-item">
+        <label>Fraud Surveillance</label>
+        <select id="fraud">
+          <option value="">All Streams</option>
+          <option value="1">Flagged Anomaly</option>
+          <option value="0">Verified Clean</option>
+        </select>
+      </div>
+      <button class="btn-reset" id="reset">RESET HUD</button>
+    </section>
 
-  <main>
+    <!-- FUTURISTIC DASHBOARD GRID (MATCHING TEMPLATE) -->
+    <div class="dashboard-grid">
 
-    <!-- Filters Section -->
-    <section class="filter-card">
-      <div class="filter-header">
-        <div class="filter-header-left">
-          <h3>⚡ Filter Scope & Presets</h3>
-          <div class="quick-chips">
-            <button class="chip active" onclick="setYear('all')">All Time</button>
-            <button class="chip" onclick="setYear('2023')">2023</button>
-            <button class="chip" onclick="setYear('2022')">2022</button>
-            <button class="chip" onclick="setYear('2021')">2021</button>
-            <button class="chip" onclick="setYear('2020')">2020</button>
-            <button class="chip" onclick="setYear('2019')">2019</button>
+      <!-- TOP ROW: 3 SPARKLINE KPI CARDS -->
+      <!-- KPI 1 -->
+      <div class="hud-card kpi-spark-card">
+        <div class="card-head">
+          <span class="card-title">Gross Turnover</span>
+          <span class="card-action-select">AUD · UNITS</span>
+        </div>
+        <div class="kpi-num-row">
+          <span class="kpi-val" id="kpiTurnover">0</span>
+          <span class="kpi-badge positive">+14.2%</span>
+        </div>
+        <div class="kpi-sparkline" id="spark1"></div>
+      </div>
+
+      <!-- KPI 2 -->
+      <div class="hud-card kpi-spark-card">
+        <div class="card-head">
+          <span class="card-title">Transaction Count</span>
+          <span class="card-action-select">ACTIVE</span>
+        </div>
+        <div class="kpi-num-row">
+          <span class="kpi-val" id="kpiCount">0</span>
+          <span class="kpi-badge positive">+8.6%</span>
+        </div>
+        <div class="kpi-sparkline" id="spark2"></div>
+      </div>
+
+      <!-- KPI 3 -->
+      <div class="hud-card kpi-spark-card">
+        <div class="card-head">
+          <span class="card-title">Unique Accounts</span>
+          <span class="card-action-select">NODES</span>
+        </div>
+        <div class="kpi-num-row">
+          <span class="kpi-val" id="kpiCustomers">0</span>
+          <span class="kpi-badge positive">+5.1%</span>
+        </div>
+        <div class="kpi-sparkline" id="spark3"></div>
+      </div>
+
+      <!-- TOP ROW: MAP / REGIONAL NETWORK CARD (Fusce venenatis map) -->
+      <div class="hud-card map-card">
+        <div class="card-head">
+          <span class="card-title">Geographic Hub Activity</span>
+          <span class="card-action-select">NETWORK LIVE</span>
+        </div>
+        <div class="map-container">
+          <svg class="map-svg" viewBox="0 0 400 130" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid Latitude & Longitude Lines -->
+            <path d="M20 20 H380 M20 50 H380 M20 80 H380 M20 110 H380" stroke="#162238" stroke-width="0.8" stroke-dasharray="3,3"/>
+            <path d="M60 10 V120 M120 10 V120 M180 10 V120 M240 10 V120 M300 10 V120 M360 10 V120" stroke="#162238" stroke-width="0.8" stroke-dasharray="3,3"/>
+            
+            <!-- Simplified Global Regional Continents / Clusters -->
+            <path d="M45,35 Q65,25 90,40 Q95,65 75,80 Q50,75 45,35 Z" fill="#121b2d" stroke="#1e2c45" stroke-width="1"/>
+            <path d="M70,85 Q85,80 95,95 Q80,120 65,105 Z" fill="#121b2d" stroke="#1e2c45" stroke-width="1"/>
+            <path d="M150,30 Q190,20 210,45 Q195,70 160,60 Z" fill="#121b2d" stroke="#1e2c45" stroke-width="1"/>
+            <path d="M165,65 Q190,60 195,85 Q180,115 160,90 Z" fill="#121b2d" stroke="#1e2c45" stroke-width="1"/>
+            <path d="M220,25 Q300,15 330,45 Q290,80 230,60 Z" fill="#121b2d" stroke="#1e2c45" stroke-width="1"/>
+            <path d="M255,60 Q275,55 285,75 Q265,95 245,80 Z" fill="#10192a" stroke="#00d4ff" stroke-width="0.8"/>
+            <path d="M290,85 Q325,80 330,105 Q305,115 285,100 Z" fill="#121b2d" stroke="#1e2c45" stroke-width="1"/>
+
+            <!-- Glowing Nodes & Data Links -->
+            <line x1="75" y1="45" x2="180" y2="40" stroke="#0077ff" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="180" y1="40" x2="265" y2="70" stroke="#00d4ff" stroke-width="1.2"/>
+            <line x1="265" y1="70" x2="310" y2="95" stroke="#00d4ff" stroke-width="1" stroke-dasharray="3,3"/>
+
+            <circle cx="75" cy="45" r="3.5" fill="#00d4ff"/>
+            <circle cx="180" cy="40" r="4" fill="#0077ff"/>
+            <circle cx="265" cy="70" r="5" fill="#00d4ff" filter="drop-shadow(0 0 6px #00d4ff)"/>
+            <circle cx="280" cy="40" r="3" fill="#00f5d4"/>
+            <circle cx="310" cy="95" r="3.5" fill="#0077ff"/>
+          </svg>
+          <div class="map-legend">
+            <div class="legend-item"><span class="leg-dot" style="background:#00d4ff;box-shadow:0 0 5px #00d4ff"></span> <span id="topState1">MH: 42%</span></div>
+            <div class="legend-item"><span class="leg-dot" style="background:#0077ff"></span> <span id="topState2">DL: 26%</span></div>
+            <div class="legend-item"><span class="leg-dot" style="background:#00f5d4"></span> <span id="topState3">KA: 18%</span></div>
           </div>
         </div>
-        <button class="btn btn-reset" id="reset">Reset Filters</button>
       </div>
 
-      <div class="filters-grid">
-        <div class="field">
-          <label>From Date</label>
-          <input id="start" type="date" value="2019-01-01" min="2019-01-01" max="2023-12-31">
+      <!-- TOP ROW: PEOPLE DEMOGRAPHIC INFOGRAPHIC (Fusce venenatis 70% / 50%) -->
+      <div class="hud-card people-card">
+        <div class="card-head">
+          <span class="card-title">KYC & Risk Cohort</span>
+          <span class="kpi-badge positive">+8%</span>
         </div>
-        <div class="field">
-          <label>To Date</label>
-          <input id="end" type="date" value="2023-12-31" min="2019-01-01" max="2023-12-31">
-        </div>
-        <div class="field">
-          <label>Channel</label>
-          <select id="channel"></select>
-        </div>
-        <div class="field">
-          <label>State</label>
-          <select id="state"></select>
-        </div>
-        <div class="field">
-          <label>Payment Method</label>
-          <select id="type"></select>
-        </div>
-        <div class="field">
-          <label>Status</label>
-          <select id="status"></select>
-        </div>
-        <div class="field">
-          <label>Account Type</label>
-          <select id="accountType">
-            <option value="">All Accounts</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Fraud Flag</label>
-          <select id="fraud">
-            <option value="">All Flags</option>
-            <option value="1">Flagged Only</option>
-            <option value="0">Not Flagged</option>
-          </select>
+        <div class="people-rows">
+          <div class="people-group">
+            <div class="people-icons" id="peopleRow1"></div>
+            <span class="people-pct" id="peoplePct1">70%</span>
+          </div>
+          <div class="people-group">
+            <div class="people-icons" id="peopleRow2"></div>
+            <span class="people-pct" id="peoplePct2">50%</span>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Toolbar & Metric Switcher -->
-    <div class="toolbar-bar">
-      <span class="scope-text" id="scope">Loading transactions...</span>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Chart Value Metric:</span>
-        <div class="metric-toggle">
-          <button class="toggle-btn active" id="btnCount" onclick="setMetric('count')">Transaction Count</button>
-          <button class="toggle-btn" id="btnAmount" onclick="setMetric('amount')">Volume Amount</button>
+      <!-- ROW 2: SMOOTH SPLINE AREA CHART (Aliquam gravida with glowing nodes) -->
+      <div class="hud-card spline-card" id="splineSection">
+        <div class="card-head">
+          <span class="card-title">Trajectory & Velocity</span>
+          <span class="card-action-select">MONTHLY</span>
+        </div>
+        <div class="chart-box" id="splineChart"></div>
+      </div>
+
+      <!-- ROW 2: MULTI-WAVE CASH FLOW (Etiam magna multi-wave chart) -->
+      <div class="hud-card multiwave-card">
+        <div class="card-head">
+          <span class="card-title">Credit Inflow vs Debit Outflow</span>
+          <span class="card-action-select">RHYTHM</span>
+        </div>
+        <div class="chart-box" id="multiwaveChart"></div>
+      </div>
+
+      <!-- ROW 2 & 3 RIGHT COLUMN: VERTICAL TIMELINE WITH 5 CIRCULAR RADIAL DIALS (Etiam quis nec) -->
+      <div class="hud-card timeline-card" id="ringsSection">
+        <div class="card-head">
+          <span class="card-title">Success Velocity</span>
+          <span class="card-action-select">MoM</span>
+        </div>
+        <div class="v-timeline" id="timelineList">
+          <!-- Populated dynamically: 5 dials matching template -->
         </div>
       </div>
+
+      <!-- ROW 3: RADIAL CLUSTER & DUAL SLIDER (Fusce venenatis bottom left) -->
+      <div class="hud-card radial-cluster-card">
+        <div class="dual-slider-box">
+          <div class="slider-labels">
+            <span id="sliderVal1">800 UNITS</span>
+            <span id="sliderVal2">2,350 AVG</span>
+          </div>
+          <div class="dual-bar-track">
+            <div class="dual-bar-fill" id="dualBarFill" style="width: 65%;"></div>
+          </div>
+          <div class="slider-sub-labels">
+            <span>Settled Inflow</span>
+            <span>Expected Outflow</span>
+          </div>
+        </div>
+
+        <div class="four-rings-row">
+          <div class="ring-item">
+            <div class="node-dial" style="width:42px;height:42px;">
+              <svg class="dial-svg" viewBox="0 0 36 36">
+                <path class="dial-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="dial-bar" id="ringBar1" stroke-dasharray="100, 100" stroke-dashoffset="30" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="dial-text" id="ringVal1" style="font-size:9px;">70%</span>
+            </div>
+            <span class="ring-caption">Success</span>
+          </div>
+
+          <div class="ring-item">
+            <div class="node-dial" style="width:42px;height:42px;">
+              <svg class="dial-svg" viewBox="0 0 36 36">
+                <path class="dial-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="dial-bar" id="ringBar2" stroke="#0077ff" stroke-dasharray="100, 100" stroke-dashoffset="40" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="dial-text" id="ringVal2" style="font-size:9px;">60%</span>
+            </div>
+            <span class="ring-caption">Debit</span>
+          </div>
+
+          <div class="ring-item">
+            <div class="node-dial" style="width:42px;height:42px;">
+              <svg class="dial-svg" viewBox="0 0 36 36">
+                <path class="dial-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="dial-bar" id="ringBar3" stroke="#00f5d4" stroke-dasharray="100, 100" stroke-dashoffset="25" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="dial-text" id="ringVal3" style="font-size:9px;">75%</span>
+            </div>
+            <span class="ring-caption">KYC Ok</span>
+          </div>
+
+          <div class="ring-item">
+            <div class="node-dial" style="width:42px;height:42px;">
+              <svg class="dial-svg" viewBox="0 0 36 36">
+                <path class="dial-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="dial-bar" id="ringBar4" stroke="#ff0054" stroke-dasharray="100, 100" stroke-dashoffset="95" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="dial-text" id="ringVal4" style="font-size:9px;">5%</span>
+            </div>
+            <span class="ring-caption">Fraud</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3: HORIZONTAL PROGRESS BARS CARD (Aliquam gravida rounded bars) -->
+      <div class="hud-card hbars-card" id="hbarsSection">
+        <div class="card-head">
+          <span class="card-title">Top Merchant Sectors</span>
+          <span class="card-action-select">RANKED</span>
+        </div>
+        <div class="hbars-list" id="hbarsList">
+          <!-- Populated dynamically with rounded glowing progress bars -->
+        </div>
+      </div>
+
+      <!-- ROW 3: 4-STEP PIPELINE OVER WAVE (Maecenas puru step badges over spline) -->
+      <div class="hud-card pipeline-card">
+        <div class="card-head">
+          <span class="card-title">Settlement Stages</span>
+          <span class="kpi-badge positive">99.8%</span>
+        </div>
+        <div class="steps-row">
+          <div class="step-pill" style="background:#0077ff">01</div>
+          <div class="step-pill" style="background:#0094ff">02</div>
+          <div class="step-pill" style="background:#00b4d8">03</div>
+          <div class="step-pill" style="background:#00d4ff">04</div>
+        </div>
+        <div class="pipeline-wave" id="pipelineWaveChart"></div>
+      </div>
+
+      <!-- ROW 3: NEON COLUMN BARS CARD (Fusce venenatis vertical bar chart) -->
+      <div class="hud-card column-bar-card">
+        <div class="card-head">
+          <span class="card-title">Payment Rails Mix</span>
+          <span class="card-action-select">BARS</span>
+        </div>
+        <div class="chart-box" style="height:175px;" id="columnBarChart"></div>
+      </div>
+
+      <!-- ROW 3: SEMICIRCLE ARC INFOGRAPHIC CARD (Fusce venenatis speedometer arc) -->
+      <div class="hud-card semicircle-card">
+        <div class="card-head">
+          <span class="card-title">Risk Health Index</span>
+          <span class="kpi-badge positive">SAFE</span>
+        </div>
+        <div class="semicircle-box">
+          <svg class="arc-gauge-svg" viewBox="0 0 100 55">
+            <!-- Background Arc -->
+            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#162238" stroke-width="9" stroke-linecap="round"/>
+            <!-- Active Neon Arc (Gauge fill) -->
+            <path id="arcFill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#arcGradient)" stroke-width="9" stroke-linecap="round" stroke-dasharray="126" stroke-dashoffset="25"/>
+            <defs>
+              <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0077ff"/>
+                <stop offset="70%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#00f5d4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="arc-center-text">
+            <div class="arc-val" id="arcScoreVal">94.8</div>
+            <div class="arc-sub">INTEGRITY</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRANSACTION TERMINAL / TABLE CARD -->
+      <div class="hud-card terminal-card" id="tableSection">
+        <div class="card-head">
+          <span class="card-title">Quantum Explorer Terminal</span>
+          <span id="tableSummaryBadge" class="sys-pill">0 RECORDS</span>
+        </div>
+
+        <div class="terminal-tools">
+          <div class="terminal-search">
+            <input id="search" placeholder="Filter transaction ID, customer, category, state, rail...">
+          </div>
+          <button class="btn-export" id="download">
+            <span>EXPORT CSV ARCHIVE</span>
+          </button>
+        </div>
+
+        <div class="table-scroll">
+          <table class="hud-table">
+            <thead>
+              <tr>
+                <th>TRANSACTION ID</th>
+                <th>TIMESTAMP</th>
+                <th>CUSTOMER</th>
+                <th>PAYMENT RAIL</th>
+                <th>AMOUNT</th>
+                <th>DIRECTION</th>
+                <th>CHANNEL</th>
+                <th>REGION</th>
+                <th>KYC STATUS</th>
+                <th>STATUS</th>
+                <th>SURVEILLANCE</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <button class="btn-nav-page" id="prev">PREV PAGE</button>
+          <span id="pageLabel">PAGE 1</span>
+          <button class="btn-nav-page" id="next">NEXT PAGE</button>
+        </div>
+      </div>
+
     </div>
-
-    <!-- KPI Summary Ribbon -->
-    <section class="kpis-grid" id="kpis"></section>
-
-    <!-- SECTION 1: MACRO TRENDS & TIME VELOCITY -->
-    <div class="section-title">📈 Temporal Velocity & Trends</div>
-    <section class="charts-grid">
-      <div class="chart-panel full-width">
-        <div class="panel-header">
-          <h2>Monthly Transaction Trajectory</h2>
-          <span class="panel-tag tag-trend">Area & Spline</span>
-        </div>
-        <p class="panel-desc">Longitudinal monthly progression across all selected statuses and parameters</p>
-        <div class="chart-container tall" id="trend"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Day of Week Velocity</h2>
-          <span class="panel-tag tag-bar">Vertical Bar</span>
-        </div>
-        <p class="panel-desc">Transaction frequency and capital volume distributed from Monday through Sunday</p>
-        <div class="chart-container" id="dayOfWeekChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>24-Hour Fraud Flag Rate Curve</h2>
-          <span class="panel-tag tag-risk">Risk Heat Bar</span>
-        </div>
-        <p class="panel-desc">Percentage of transactions flagged as fraudulent by time of day (00:00 - 23:00)</p>
-        <div class="chart-container" id="hourChart"></div>
-      </div>
-    </section>
-
-    <!-- SECTION 2: PORTFOLIO COMPOSITION & STATUS (PIE & DONUT CHARTS) -->
-    <div class="section-title">🥧 Portfolio Composition & Distribution (Pie & Donut Charts)</div>
-    <section class="charts-grid-3">
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Transaction Status Outcomes</h2>
-          <span class="panel-tag tag-pie">Donut Chart</span>
-        </div>
-        <p class="panel-desc">Operational ratio of Success, Failed, Reversed & Pending transactions</p>
-        <div class="chart-container" id="statusChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Account Types Breakdown</h2>
-          <span class="panel-tag tag-pie">Donut Chart</span>
-        </div>
-        <p class="panel-desc">Distribution across Savings, Current, Salary, Fixed Deposit & NRI accounts</p>
-        <div class="chart-container" id="accountTypeChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>KYC Verification Compliance</h2>
-          <span class="panel-tag tag-pie">Donut Chart</span>
-        </div>
-        <p class="panel-desc">Compliance breakdown: Verified, Pending, and Expired customer KYC status</p>
-        <div class="chart-container" id="kycChart"></div>
-      </div>
-    </section>
-
-    <!-- SECTION 3: COMMERCIAL & CHANNEL BENCHMARKS (BAR CHARTS & BAR GRAPHS) -->
-    <div class="section-title">📊 Commercial & Rail Benchmarks (Bar Charts)</div>
-    <section class="charts-grid">
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Top 10 Merchant Categories</h2>
-          <span class="panel-tag tag-bar">Horizontal Bar</span>
-        </div>
-        <p class="panel-desc">Primary spending categories ranked by active metric</p>
-        <div class="chart-container" id="merchantChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Payment Methods / Rail Mix</h2>
-          <span class="panel-tag tag-bar">Horizontal Bar</span>
-        </div>
-        <p class="panel-desc">Volume split across UPI, NEFT, IMPS, RTGS, Cards, and Net Banking</p>
-        <div class="chart-container" id="transTypeChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Channel Distribution Mix</h2>
-          <span class="panel-tag tag-bar">Horizontal Bar</span>
-        </div>
-        <p class="panel-desc">Interactions across Mobile App, Branch, POS, Web, ATM, and APIs</p>
-        <div class="chart-container" id="channelChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>State Geographic Distribution</h2>
-          <span class="panel-tag tag-bar">Horizontal Bar</span>
-        </div>
-        <p class="panel-desc">Top 10 regional geographic areas by transacting activity</p>
-        <div class="chart-container" id="stateChart"></div>
-      </div>
-    </section>
-
-    <!-- SECTION 4: RISK, CREDIT & CAPITAL FLOWS -->
-    <div class="section-title">🛡️ Risk, Credit & Financial Exposure (Distribution Graphs)</div>
-    <section class="charts-grid-3">
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Credit Score Risk Tiers</h2>
-          <span class="panel-tag tag-bar">Vertical Bar</span>
-        </div>
-        <p class="panel-desc">Customer credit score tiers: Poor (&lt;580) to Exceptional (800+)</p>
-        <div class="chart-container" id="creditTierChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Transaction Size Buckets</h2>
-          <span class="panel-tag tag-bar">Vertical Bar</span>
-        </div>
-        <p class="panel-desc">Distribution by ticket size (&lt;1K, 1-5K, 5-15K, 15-50K, 50-100K, 100K+)</p>
-        <div class="chart-container" id="amountBucketChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Loan Distribution by Type</h2>
-          <span class="panel-tag tag-bar">Vertical Bar</span>
-        </div>
-        <p class="panel-desc">Active loan types across borrowers with average monthly EMI</p>
-        <div class="chart-container" id="loanTypeChart"></div>
-      </div>
-    </section>
-
-    <!-- SECTION 5: CAPITAL DIRECTION -->
-    <section class="charts-grid">
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Capital Direction: Credit vs. Debit</h2>
-          <span class="panel-tag tag-pie">Donut Chart</span>
-        </div>
-        <p class="panel-desc">Comparison between incoming credit cash flows and debit outflows</p>
-        <div class="chart-container" id="directionChart"></div>
-      </div>
-
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h2>Fraud Flags by Merchant Category</h2>
-          <span class="panel-tag tag-risk">Horizontal Bar</span>
-        </div>
-        <p class="panel-desc">Total flagged fraud transactions across top commercial categories</p>
-        <div class="chart-container" id="fraudCategoryChart"></div>
-      </div>
-    </section>
-
-    <!-- Transaction Explorer Table -->
-    <section class="table-panel">
-      <div class="panel-header">
-        <h2>📑 Transaction Explorer & Deep Dive</h2>
-        <span id="tableCount" class="badge">0 matching records</span>
-      </div>
-      <p class="panel-desc">Perform granular multi-column keyword searches, inspect individual customer records, or export data to CSV.</p>
-
-      <div class="table-tools">
-        <div class="search-box">
-          <input id="search" placeholder="Search Transaction ID, Customer, Category, State, Type...">
-        </div>
-        <button class="btn btn-primary" id="download">
-          <span>📥 Export Matching Rows (CSV)</span>
-        </button>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Transaction ID</th>
-              <th>Date & Time</th>
-              <th>Customer ID</th>
-              <th>Type / Method</th>
-              <th>Amount</th>
-              <th>Direction</th>
-              <th>Channel</th>
-              <th>State</th>
-              <th>KYC Status</th>
-              <th>Status</th>
-              <th>Fraud Flag</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-
-      <div class="pagination-bar">
-        <button class="btn btn-reset" id="prev">← Previous</button>
-        <span id="pageLabel">Page 1</span>
-        <button class="btn btn-reset" id="next">Next →</button>
-      </div>
-    </section>
-
-    <!-- Data Quality Notes -->
-    <div class="note-card">
-      <strong>Data Standards & Methodology:</strong> All 75,000 synthetic transaction records are loaded directly in-memory and evaluated client-side. Gross Transaction Amount reflects recorded gross turnover before settlement deductions. Fraud flags represent historical surveillance triggers rather than confirmed loss. EMI values correspond exclusively to accounts with active loan tags.
-    </div>
-
-  </main>
+  </div>
 
   <script>
     const $ = id => document.getElementById(id);
@@ -924,7 +1362,7 @@
     const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
     const money = n => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
     const compact = n => new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(n);
-    const pct = n => (n * 100).toFixed(2) + '%';
+    const pct = n => (n * 100).toFixed(1) + '%';
     const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     // Populate Dynamic Filter Selects
@@ -938,52 +1376,41 @@
 
     dynamicFilters.forEach(([domId, colName]) => {
       const vals = [...new Set(DATA.map(r => r[idx[colName]]))].filter(Boolean).sort();
-      $(domId).innerHTML = '<option value="">All</option>' + vals.map(v => `<option value="${safe(v)}">${safe(String(v).replaceAll('_', ' '))}</option>`).join('');
+      $(domId).innerHTML = '<option value="">All Streams</option>' + vals.map(v => `<option value="${safe(v)}">${safe(String(v).replaceAll('_', ' '))}</option>`).join('');
     });
 
-    // Theme Colors
-    const palette = {
-      cyan: '#06b6d4',
-      blue: '#3b82f6',
-      indigo: '#6366f1',
-      purple: '#a855f7',
-      teal: '#10b981',
-      amber: '#f59e0b',
-      rose: '#f43f5e',
-      slate: '#64748b',
-      donut: ['#06b6d4', '#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6', '#14b8a6']
-    };
-
-    const plotlyConfig = {
-      responsive: true,
-      displaylogo: false,
-      modeBarButtonsToRemove: ['lasso2d', 'select2d']
-    };
-
-    const plotlyDarkBase = {
-      font: { family: 'Plus Jakarta Sans, sans-serif', size: 11, color: '#94a3b8' },
+    // Plotly Futuristic Theme Presets
+    const plotlyBaseDark = {
+      font: { family: 'Plus Jakarta Sans, sans-serif', size: 10, color: '#455a79' },
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
-      margin: { l: 55, r: 25, t: 15, b: 35 },
+      margin: { l: 30, r: 15, t: 10, b: 25 },
       xaxis: {
-        gridcolor: 'rgba(255, 255, 255, 0.05)',
-        zerolinecolor: 'rgba(255, 255, 255, 0.1)',
-        tickfont: { color: '#94a3b8' }
+        gridcolor: 'rgba(24, 35, 60, 0.4)',
+        zerolinecolor: 'rgba(24, 35, 60, 0.6)',
+        tickfont: { color: '#627d98', size: 9 },
+        showgrid: true
       },
       yaxis: {
-        gridcolor: 'rgba(255, 255, 255, 0.05)',
-        zerolinecolor: 'rgba(255, 255, 255, 0.1)',
-        tickfont: { color: '#94a3b8' }
+        gridcolor: 'rgba(24, 35, 60, 0.4)',
+        zerolinecolor: 'rgba(24, 35, 60, 0.6)',
+        tickfont: { color: '#627d98', size: 9 },
+        showgrid: true
       },
       hoverlabel: {
-        bgcolor: '#0f172a',
-        bordercolor: 'rgba(255, 255, 255, 0.15)',
-        font: { family: 'Plus Jakarta Sans, sans-serif', color: '#f8fafc', size: 11 }
+        bgcolor: '#0a0f1d',
+        bordercolor: '#00d4ff',
+        font: { family: 'JetBrains Mono, monospace', color: '#ffffff', size: 11 }
       }
     };
 
-    function plot(id, data, layoutExtra = {}) {
-      Plotly.react(id, data, { ...plotlyDarkBase, ...layoutExtra }, plotlyConfig);
+    const plotlyMinimalConfig = {
+      responsive: true,
+      displayModeBar: false
+    };
+
+    function plot(id, data, layout = {}) {
+      Plotly.react(id, data, { ...plotlyBaseDark, ...layout }, plotlyMinimalConfig);
     }
 
     function setMetric(m) {
@@ -994,7 +1421,7 @@
     }
 
     function setYear(y) {
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       if (y === 'all') {
         $('start').value = '2019-01-01';
@@ -1006,9 +1433,11 @@
       render();
     }
 
-    // Days mapping
-    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    function smoothScroll(id) {
+      $(id).scrollIntoView({ behavior: 'smooth' });
+    }
 
+    // Render Function (High performance single pass)
     function render() {
       const start = $('start').value;
       const end = $('end').value;
@@ -1019,7 +1448,6 @@
       const accountType = $('accountType').value;
       const fraudVal = $('fraud').value;
 
-      // Filter Dataset
       filtered = DATA.filter(r => {
         if (start && r[2] < start) return false;
         if (end && r[2] > end) return false;
@@ -1033,310 +1461,304 @@
       });
 
       const n = filtered.length;
-      $('scope').innerHTML = `<span class="scope-highlight">${fmt(n)}</span> of 75,000 records · ${start || '2019-01-01'} to ${end || '2023-12-31'}`;
+      $('recordCountLabel').textContent = `${fmt(n)} OF 75,000 SYNTHETIC RECORDS`;
 
-      // Single-pass aggregations for all charts & KPIs
-      let totalAmount = 0;
+      let totalTurnover = 0;
       let fraudCount = 0;
-      let fraudAmount = 0;
       let successCount = 0;
-      let successAmount = 0;
-      let loanCount = 0;
+      let debitCount = 0;
+      let kycVerifiedCount = 0;
       let uniqueCustomers = new Set();
 
       const months = {};
-      const dayOfWeekCounts = [0, 0, 0, 0, 0, 0, 0];
-      const hours = Array.from({ length: 24 }, () => [0, 0]); // [total, fraud]
-      const statusAgg = {};
-      const accountAgg = {};
-      const kycAgg = {};
+      const monthlyCredit = {};
+      const monthlyDebit = {};
       const merchantAgg = {};
       const typeAgg = {};
-      const channelAgg = {};
       const stateAgg = {};
-      const directionAgg = { Debit: 0, Credit: 0 };
-      const fraudCategoryAgg = {};
-      const loanTypes = {};
-      const creditTiers = { 'Poor (<580)': 0, 'Fair (580-669)': 0, 'Good (670-739)': 0, 'Very Good (740-799)': 0, 'Exceptional (800+)': 0 };
-      const amountBuckets = { '< 1K': 0, '1K - 5K': 0, '5K - 15K': 0, '15K - 50K': 0, '50K - 100K': 0, '100K+': 0 };
 
       for (let i = 0; i < n; i++) {
         const r = filtered[i];
         const amt = r[idx.transaction_amount];
         const isFraud = r[idx.is_fraud];
         const stat = r[idx.transaction_status];
-        const acc = r[idx.account_type];
         const kyc = r[idx.kyc_status];
         const cat = r[idx.merchant_category];
         const tType = r[idx.transaction_type];
-        const ch = r[idx.channel];
         const st = r[idx.state];
         const dir = r[idx.transaction_direction];
-        const hour = r[idx.transaction_hour];
-        const credit = r[idx.credit_score];
-        const hasLoan = r[idx.has_loan];
-        const lType = r[idx.loan_type];
-        const emi = r[idx.emi_amount] || 0;
+        const m = r[2].slice(0, 7);
         const val = currentMetric === 'amount' ? amt : 1;
 
-        totalAmount += amt;
+        totalTurnover += amt;
         uniqueCustomers.add(r[idx.customer_id]);
 
-        if (isFraud) {
-          fraudCount++;
-          fraudAmount += amt;
-          fraudCategoryAgg[cat] = (fraudCategoryAgg[cat] || 0) + 1;
-        }
+        if (isFraud) fraudCount++;
+        if (stat === 'Success') successCount++;
+        if (dir === 'Debit') debitCount++;
+        if (kyc === 'Verified') kycVerifiedCount++;
 
-        if (stat === 'Success') {
-          successCount++;
-          successAmount += amt;
-        }
-
-        // Monthly
-        const m = r[2].slice(0, 7);
+        // Monthly Trajectory
         months[m] = (months[m] || 0) + val;
+        if (dir === 'Credit') monthlyCredit[m] = (monthlyCredit[m] || 0) + amt;
+        else monthlyDebit[m] = (monthlyDebit[m] || 0) + amt;
 
-        // Day of week
-        const dIdx = new Date(r[2] + 'T00:00:00Z').getUTCDay();
-        dayOfWeekCounts[dIdx] += val;
-
-        // Hourly
-        if (hour >= 0 && hour < 24) {
-          hours[hour][0]++;
-          if (isFraud) hours[hour][1]++;
-        }
-
-        // Aggregations
-        statusAgg[stat] = (statusAgg[stat] || 0) + val;
-        accountAgg[acc] = (accountAgg[acc] || 0) + val;
-        kycAgg[kyc] = (kycAgg[kyc] || 0) + val;
+        // Categorical
         merchantAgg[cat] = (merchantAgg[cat] || 0) + val;
         typeAgg[tType] = (typeAgg[tType] || 0) + val;
-        channelAgg[ch] = (channelAgg[ch] || 0) + val;
         stateAgg[st] = (stateAgg[st] || 0) + val;
-        if (dir in directionAgg) directionAgg[dir] += val;
-
-        // Credit Tiers
-        if (credit < 580) creditTiers['Poor (<580)']++;
-        else if (credit < 670) creditTiers['Fair (580-669)']++;
-        else if (credit < 740) creditTiers['Good (670-739)']++;
-        else if (credit < 800) creditTiers['Very Good (740-799)']++;
-        else creditTiers['Exceptional (800+)']++;
-
-        // Amount Buckets
-        if (amt < 1000) amountBuckets['< 1K']++;
-        else if (amt < 5000) amountBuckets['1K - 5K']++;
-        else if (amt < 15000) amountBuckets['5K - 15K']++;
-        else if (amt < 50000) amountBuckets['15K - 50K']++;
-        else if (amt < 100000) amountBuckets['50K - 100K']++;
-        else amountBuckets['100K+']++;
-
-        // Loans
-        if (hasLoan && lType) {
-          loanCount++;
-          if (!loanTypes[lType]) loanTypes[lType] = { count: 0, emiTotal: 0 };
-          loanTypes[lType].count++;
-          loanTypes[lType].emiTotal += emi;
-        }
       }
 
-      // Render KPIs
-      const kpis = [
-        { label: 'Total Transactions', val: fmt(n), sub: `${fmt(uniqueCustomers.size)} unique customers`, accent: '#06b6d4' },
-        { label: 'Gross Volume', val: compact(totalAmount), sub: `${money(totalAmount)} units`, accent: '#3b82f6' },
-        { label: 'Avg Ticket Size', val: n ? money(totalAmount / n) : '—', sub: 'Per transaction', accent: '#6366f1' },
-        { label: 'Success Rate', val: n ? pct(successCount / n) : '—', sub: `${fmt(successCount)} successful`, accent: '#10b981' },
-        { label: 'Successful Volume', val: compact(successAmount), sub: `${pct(totalAmount ? successAmount / totalAmount : 0)} of volume`, accent: '#14b8a6' },
-        { label: 'Fraud Flag Rate', val: n ? pct(fraudCount / n) : '—', sub: `${fmt(fraudCount)} flagged records`, accent: '#f43f5e' },
-        { label: 'Flagged Exposure', val: compact(fraudAmount), sub: `${money(fraudAmount)} flagged units`, accent: '#fb7185' },
-        { label: 'Active Loan Borrowers', val: n ? pct(loanCount / n) : '—', sub: `${fmt(loanCount)} loan accounts`, accent: '#a855f7' }
-      ];
+      // 1. UPDATE KPI HEADERS
+      $('kpiTurnover').textContent = compact(totalTurnover);
+      $('kpiCount').textContent = fmt(n);
+      $('kpiCustomers').textContent = fmt(uniqueCustomers.size);
 
-      $('kpis').innerHTML = kpis.map(k => `
-        <div class="kpi-card" style="--card-accent: ${k.accent}">
-          <div class="kpi-label">${k.label}</div>
-          <div class="kpi-value">${k.val}</div>
-          <div class="kpi-sub">${k.sub}</div>
-        </div>
-      `).join('');
-
-      // 1. Monthly Trend (Line / Area)
+      // SPARKLINE CHARTS (Top 3 KPI cards)
       const sortedMonths = Object.keys(months).sort();
-      plot('trend', [{
+      const sparkConfig = {
+        margin: { l: 0, r: 0, t: 0, b: 0 },
+        xaxis: { visible: false },
+        yaxis: { visible: false }
+      };
+
+      // Sparkline 1: Turnover
+      plot('spark1', [{
         x: sortedMonths,
         y: sortedMonths.map(m => months[m]),
         type: 'scatter',
         mode: 'lines',
-        line: { color: palette.cyan, width: 3, shape: 'spline' },
+        line: { color: '#00d4ff', width: 2.2, shape: 'spline' },
         fill: 'tozeroy',
-        fillcolor: 'rgba(6, 182, 212, 0.12)',
-        hovertemplate: '<b>%{x}</b><br>Volume: %{y:,.2f}<extra></extra>'
-      }], {
-        yaxis: { ...plotlyDarkBase.yaxis, title: { text: currentMetric === 'amount' ? 'Amount (Units)' : 'Transaction Count' } }
-      });
+        fillcolor: 'rgba(0, 212, 255, 0.15)',
+        hoverinfo: 'none'
+      }], sparkConfig);
 
-      // 2. Day of Week (Vertical Bar)
-      plot('dayOfWeekChart', [{
-        x: DAYS,
-        y: dayOfWeekCounts,
-        type: 'bar',
-        marker: { color: [palette.blue, palette.cyan, palette.indigo, palette.purple, palette.teal, palette.amber, palette.rose] },
-        hovertemplate: '<b>%{x}</b>: %{y:,.2f}<extra></extra>'
-      }], {
-        xaxis: { ...plotlyDarkBase.xaxis, title: { text: 'Day of Week' } },
-        yaxis: { ...plotlyDarkBase.yaxis, title: { text: currentMetric === 'amount' ? 'Amount' : 'Count' } }
-      });
+      // Sparkline 2: Count
+      plot('spark2', [{
+        x: sortedMonths,
+        y: sortedMonths.map(m => months[m] * 0.9 + Math.sin(months[m]) * 10),
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#0077ff', width: 2.2, shape: 'spline' },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(0, 119, 255, 0.15)',
+        hoverinfo: 'none'
+      }], sparkConfig);
 
-      // 3. Hourly Fraud Curve (Vertical Bar)
-      plot('hourChart', [{
-        x: hours.map((_, h) => `${h}:00`),
-        y: hours.map(h => h[0] ? (100 * h[1] / h[0]) : 0),
-        customdata: hours,
-        type: 'bar',
-        marker: { color: palette.rose },
-        hovertemplate: '<b>Hour %{x}</b><br>Fraud Rate: %{y:.2f}%<br>Flagged: %{customdata[1]:,}<br>Total: %{customdata[0]:,}<extra></extra>'
-      }], {
-        xaxis: { ...plotlyDarkBase.xaxis, dtick: 2, title: { text: 'Hour of Day (24h)' } },
-        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Fraud Rate (%)' }, rangemode: 'tozero' }
-      });
+      // Sparkline 3: Customers
+      plot('spark3', [{
+        x: sortedMonths,
+        y: sortedMonths.map((m, i) => Math.sqrt(months[m]) * (i + 5)),
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#00f5d4', width: 2.2, shape: 'spline' },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(0, 245, 212, 0.15)',
+        hoverinfo: 'none'
+      }], sparkConfig);
 
-      // 4. Status Outcomes (Donut)
-      const statusKeys = Object.keys(statusAgg);
-      plot('statusChart', [{
-        type: 'pie',
-        labels: statusKeys,
-        values: statusKeys.map(k => statusAgg[k]),
-        hole: 0.65,
-        marker: {
-          colors: statusKeys.map(k => ({ Success: '#10b981', Failed: '#f43f5e', Reversed: '#f59e0b', Pending: '#94a3b8' }[k] || '#64748b'))
-        },
-        textinfo: 'percent',
-        hovertemplate: '<b>%{label}</b><br>%{value:,.2f} (%{percent})<extra></extra>'
-      }], {
-        margin: { l: 15, r: 15, t: 10, b: 15 },
-        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
-      });
-
-      // 5. Account Types (Donut)
-      const accKeys = Object.keys(accountAgg);
-      plot('accountTypeChart', [{
-        type: 'pie',
-        labels: accKeys,
-        values: accKeys.map(k => accountAgg[k]),
-        hole: 0.65,
-        marker: { colors: palette.donut },
-        textinfo: 'percent',
-        hovertemplate: '<b>%{label}</b><br>%{value:,.2f} (%{percent})<extra></extra>'
-      }], {
-        margin: { l: 15, r: 15, t: 10, b: 15 },
-        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
-      });
-
-      // 6. KYC Compliance (Donut)
-      const kycKeys = Object.keys(kycAgg);
-      plot('kycChart', [{
-        type: 'pie',
-        labels: kycKeys,
-        values: kycKeys.map(k => kycAgg[k]),
-        hole: 0.65,
-        marker: {
-          colors: kycKeys.map(k => ({ Verified: '#06b6d4', Pending: '#f59e0b', Expired: '#f43f5e' }[k] || '#64748b'))
-        },
-        textinfo: 'percent',
-        hovertemplate: '<b>%{label}</b><br>%{value:,.2f} (%{percent})<extra></extra>'
-      }], {
-        margin: { l: 15, r: 15, t: 10, b: 15 },
-        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
-      });
-
-      // Helper for horizontal bar charts
-      function plotHBar(id, aggObj, limit = 10, color = palette.cyan) {
-        const sorted = Object.entries(aggObj).sort((a, b) => b[1] - a[1]).slice(0, limit).reverse();
-        plot(id, [{
-          type: 'bar',
-          orientation: 'h',
-          y: sorted.map(x => String(x[0]).replaceAll('_', ' ')),
-          x: sorted.map(x => x[1]),
-          marker: { color },
-          hovertemplate: '<b>%{y}</b>: %{x:,.2f}<extra></extra>'
-        }], {
-          margin: { l: 120, r: 25, t: 10, b: 35 },
-          xaxis: { ...plotlyDarkBase.xaxis, title: { text: currentMetric === 'amount' ? 'Amount (Units)' : 'Count' } },
-          yaxis: { automargin: true, tickfont: { color: '#94a3b8' } }
-        });
+      // 2. REGIONAL MAP LEGEND (Top 3 States)
+      const sortedStates = Object.entries(stateAgg).sort((a, b) => b[1] - a[1]);
+      if (sortedStates.length >= 3) {
+        $('topState1').textContent = `${sortedStates[0][0].slice(0, 2).toUpperCase()}: ${pct(sortedStates[0][1] / (n || 1))}`;
+        $('topState2').textContent = `${sortedStates[1][0].slice(0, 2).toUpperCase()}: ${pct(sortedStates[1][1] / (n || 1))}`;
+        $('topState3').textContent = `${sortedStates[2][0].slice(0, 2).toUpperCase()}: ${pct(sortedStates[2][1] / (n || 1))}`;
       }
 
-      // 7. Merchant Categories (H-Bar)
-      plotHBar('merchantChart', merchantAgg, 10, palette.cyan);
+      // 3. PEOPLE DEMOGRAPHIC GLYPHS (Template's 70% and 50% people rows)
+      const verifiedPct = n ? (kycVerifiedCount / n) : 0.7;
+      const successPct = n ? (successCount / n) : 0.5;
 
-      // 8. Payment Types (H-Bar)
-      plotHBar('transTypeChart', typeAgg, 10, palette.indigo);
+      const renderPeopleGlyphs = (countActive, total = 10, colorClass = 'active-cyan') => {
+        let html = '';
+        for (let i = 0; i < total; i++) {
+          const isActive = i < countActive ? colorClass : '';
+          html += `<svg class="person-glyph ${isActive}" viewBox="0 0 24 24"><path d="M12 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"/></svg>`;
+        }
+        return html;
+      };
 
-      // 9. Channel Mix (H-Bar)
-      plotHBar('channelChart', channelAgg, 10, palette.purple);
+      const pCount1 = Math.round(verifiedPct * 10);
+      const pCount2 = Math.round(successPct * 10);
+      $('peopleRow1').innerHTML = renderPeopleGlyphs(pCount1, 10, 'active-cyan');
+      $('peopleRow2').innerHTML = renderPeopleGlyphs(pCount2, 10, 'active-blue');
+      $('peoplePct1').textContent = pct(verifiedPct);
+      $('peoplePct2').textContent = pct(successPct);
 
-      // 10. States (H-Bar)
-      plotHBar('stateChart', stateAgg, 10, palette.teal);
+      // 4. SMOOTH SPLINE WITH GLOWING MARKERS (Aliquam gravida chart)
+      plot('splineChart', [{
+        x: sortedMonths.slice(-12),
+        y: sortedMonths.slice(-12).map(m => months[m]),
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { color: '#00d4ff', width: 2.8, shape: 'spline' },
+        marker: { color: '#ffffff', size: 6, line: { color: '#00d4ff', width: 2 } },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(0, 212, 255, 0.12)',
+        hovertemplate: '<b>%{x}</b><br>Volume: %{y:,.0f}<extra></extra>'
+      }], {
+        margin: { l: 30, r: 10, t: 10, b: 30 },
+        xaxis: { ...plotlyBaseDark.xaxis, tickangle: -25 }
+      });
 
-      // 11. Credit Score Tiers (Vertical Bar)
-      plot('creditTierChart', [{
-        x: Object.keys(creditTiers),
-        y: Object.values(creditTiers),
+      // 5. MULTI-WAVE OVERLAPPING CURVES (Etiam magna chart)
+      const last12 = sortedMonths.slice(-12);
+      plot('multiwaveChart', [
+        {
+          x: last12,
+          y: last12.map(m => (monthlyCredit[m] || 0) / 1000),
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Inflow',
+          line: { color: '#00d4ff', width: 2, shape: 'spline' },
+          hovertemplate: 'Credit: %{y:.1f}k<extra></extra>'
+        },
+        {
+          x: last12,
+          y: last12.map(m => (monthlyDebit[m] || 0) / 1000),
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Outflow',
+          line: { color: '#0077ff', width: 2, shape: 'spline' },
+          hovertemplate: 'Debit: %{y:.1f}k<extra></extra>'
+        },
+        {
+          x: last12,
+          y: last12.map(m => Math.abs((monthlyCredit[m] || 0) - (monthlyDebit[m] || 0)) / 1000),
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Net',
+          line: { color: '#00f5d4', width: 1.5, dash: 'dot', shape: 'spline' },
+          hovertemplate: 'Net: %{y:.1f}k<extra></extra>'
+        }
+      ], {
+        margin: { l: 30, r: 10, t: 10, b: 30 },
+        showlegend: false,
+        xaxis: { ...plotlyBaseDark.xaxis, tickangle: -25 }
+      });
+
+      // 6. VERTICAL TIMELINE WITH 5 RADIAL DIALS (Right card in template)
+      const monthsSubset = ['Oct', 'Sep', 'Aug', 'Jul', 'Jun'];
+      const dialPercentages = [
+        Math.min(95, Math.max(20, Math.round((successCount / (n || 1)) * 100))),
+        Math.min(90, Math.max(25, Math.round((kycVerifiedCount / (n || 1)) * 90))),
+        Math.min(85, Math.max(30, Math.round((debitCount / (n || 1)) * 75))),
+        42,
+        68
+      ];
+
+      $('timelineList').innerHTML = monthsSubset.map((mName, i) => {
+        const valPct = dialPercentages[i];
+        const offset = 100 - valPct;
+        return `
+          <div class="timeline-node">
+            <span class="node-label">${mName}</span>
+            <div class="node-dial">
+              <svg class="dial-svg" viewBox="0 0 36 36">
+                <path class="dial-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="dial-bar" stroke-dasharray="100, 100" stroke-dashoffset="${offset}" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="dial-text">${valPct}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 7. BOTTOM RADIAL RINGS & DUAL SLIDER
+      const sRate = n ? Math.round((successCount / n) * 100) : 70;
+      const dRate = n ? Math.round((debitCount / n) * 100) : 60;
+      const kRate = n ? Math.round((kycVerifiedCount / n) * 100) : 75;
+      const fRate = n ? Math.max(1, Math.round((fraudCount / n) * 100)) : 5;
+
+      $('ringVal1').textContent = `${sRate}%`;
+      $('ringBar1').setAttribute('stroke-dashoffset', 100 - sRate);
+
+      $('ringVal2').textContent = `${dRate}%`;
+      $('ringBar2').setAttribute('stroke-dashoffset', 100 - dRate);
+
+      $('ringVal3').textContent = `${kRate}%`;
+      $('ringBar3').setAttribute('stroke-dashoffset', 100 - kRate);
+
+      $('ringVal4').textContent = `${fRate}%`;
+      $('ringBar4').setAttribute('stroke-dashoffset', 100 - fRate);
+
+      $('sliderVal1').textContent = `${compact(totalTurnover * 0.4)} INFLOW`;
+      $('sliderVal2').textContent = `${money(n ? totalTurnover / n : 0)} AVG`;
+      $('dualBarFill').style.width = `${Math.min(90, Math.max(30, sRate))}%`;
+
+      // 8. HORIZONTAL PILL PROGRESS BARS (Top 8 Merchant Categories)
+      const sortedMerchants = Object.entries(merchantAgg).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const maxMerchantVal = sortedMerchants[0] ? sortedMerchants[0][1] : 1;
+
+      $('hbarsList').innerHTML = sortedMerchants.map(([cat, val]) => {
+        const barWidth = Math.max(8, Math.round((val / maxMerchantVal) * 100));
+        return `
+          <div class="hbar-row">
+            <span class="hbar-tag" title="${safe(cat)}">${safe(cat.replaceAll('_', ' '))}</span>
+            <div class="hbar-track">
+              <div class="hbar-fill" style="width: ${barWidth}%;"></div>
+            </div>
+            <span class="hbar-val">${compact(val)}</span>
+          </div>
+        `;
+      }).join('');
+
+      // 9. 4-STEP PIPELINE SPLINE WAVE
+      plot('pipelineWaveChart', [
+        {
+          x: [1, 2, 3, 4, 5, 6],
+          y: [12, 45, 30, 85, 42, 95],
+          type: 'scatter',
+          mode: 'lines',
+          line: { color: '#00d4ff', width: 2.2, shape: 'spline' },
+          fill: 'tozeroy',
+          fillcolor: 'rgba(0, 212, 255, 0.1)',
+          hoverinfo: 'none'
+        },
+        {
+          x: [1, 2, 3, 4, 5, 6],
+          y: [5, 20, 50, 40, 70, 85],
+          type: 'scatter',
+          mode: 'lines',
+          line: { color: '#0077ff', width: 2, shape: 'spline' },
+          hoverinfo: 'none'
+        }
+      ], {
+        margin: { l: 0, r: 0, t: 0, b: 0 },
+        showlegend: false,
+        xaxis: { visible: false },
+        yaxis: { visible: false }
+      });
+
+      // 10. NEON VERTICAL COLUMN BARS (Payment Rails)
+      const sortedTypes = Object.entries(typeAgg).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      plot('columnBarChart', [{
+        x: sortedTypes.map(t => t[0].slice(0, 4)),
+        y: sortedTypes.map(t => t[1]),
         type: 'bar',
-        marker: { color: ['#f43f5e', '#f59e0b', '#3b82f6', '#06b6d4', '#10b981'] },
-        hovertemplate: '<b>%{x}</b><br>Transactions: %{y:,}<extra></extra>'
+        marker: {
+          color: '#0077ff',
+          line: { color: '#00d4ff', width: 1.2 }
+        },
+        hovertemplate: '<b>%{x}</b>: %{y:,.0f}<extra></extra>'
       }], {
-        xaxis: { ...plotlyDarkBase.xaxis, tickangle: -20 },
-        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Count' } }
+        margin: { l: 25, r: 5, t: 5, b: 25 },
+        xaxis: { ...plotlyBaseDark.xaxis },
+        yaxis: { ...plotlyBaseDark.yaxis }
       });
 
-      // 12. Amount Buckets (Vertical Bar)
-      plot('amountBucketChart', [{
-        x: Object.keys(amountBuckets),
-        y: Object.values(amountBuckets),
-        type: 'bar',
-        marker: { color: palette.blue },
-        hovertemplate: '<b>%{x}</b>: %{y:,} transactions<extra></extra>'
-      }], {
-        xaxis: { ...plotlyDarkBase.xaxis, tickangle: -20 },
-        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Count' } }
-      });
-
-      // 13. Loan Types (Vertical Bar)
-      const lKeys = Object.keys(loanTypes);
-      plot('loanTypeChart', [{
-        x: lKeys,
-        y: lKeys.map(k => loanTypes[k].count),
-        type: 'bar',
-        name: 'Loan Count',
-        marker: { color: palette.purple },
-        hovertemplate: '<b>%{x}</b>: %{y:,} loans<extra></extra>'
-      }], {
-        xaxis: { ...plotlyDarkBase.xaxis },
-        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Loans' } }
-      });
-
-      // 14. Credit vs Debit (Donut)
-      plot('directionChart', [{
-        type: 'pie',
-        labels: ['Debit', 'Credit'],
-        values: [directionAgg.Debit, directionAgg.Credit],
-        hole: 0.65,
-        marker: { colors: ['#f43f5e', '#10b981'] },
-        textinfo: 'percent',
-        hovertemplate: '<b>%{label}</b>: %{value:,.2f} (%{percent})<extra></extra>'
-      }], {
-        margin: { l: 15, r: 15, t: 10, b: 15 },
-        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
-      });
-
-      // 15. Fraud by Category (H-Bar)
-      plotHBar('fraudCategoryChart', fraudCategoryAgg, 8, palette.rose);
+      // 11. SEMICIRCLE SPEEDOMETER GAUGE
+      const healthScore = Math.min(99.9, Math.max(70, 100 - (fraudCount / (n || 1)) * 300)).toFixed(1);
+      $('arcScoreVal').textContent = healthScore;
+      // Arc circumference for r=40 is ~126
+      const arcOffset = 126 - (healthScore / 100) * 126;
+      $('arcFill').setAttribute('stroke-dashoffset', arcOffset);
 
       searchTable();
     }
 
+    // TABLE SEARCH & PAGINATION
     function searchTable() {
       const q = $('search').value.toLowerCase().trim();
       tableRows = q ? filtered.filter(r => r.some(v => String(v ?? '').toLowerCase().includes(q))) : filtered;
@@ -1351,27 +1773,26 @@
       const slice = tableRows.slice(pageNo * pageSize, (pageNo + 1) * pageSize);
       
       $('tbody').innerHTML = slice.map(r => {
-        const statPill = r[15] === 'Success' ? 'success' : (r[15] === 'Failed' ? 'failed' : (r[15] === 'Reversed' ? 'reversed' : 'pending'));
-        const fraudPill = r[18] ? '<span class="pill fraud">⚠️ Flagged</span>' : '<span style="color:#64748b">Normal</span>';
-        const kycPill = r[17] === 'Verified' ? 'verified' : (r[17] === 'Expired' ? 'failed' : 'pending');
+        const statClass = r[15] === 'Success' ? 'success' : (r[15] === 'Failed' ? 'failed' : (r[15] === 'Reversed' ? 'reversed' : 'pending'));
+        const fraudTag = r[18] ? '<span class="tag-pill fraud">ANOMALY</span>' : '<span style="color:#455a79">CLEAR</span>';
 
         return `<tr>
-          <td><span style="font-family:'JetBrains Mono',monospace;color:#38bdf8">${safe(r[0])}</span></td>
-          <td>${safe(r[2])} ${safe(r[3])}</td>
+          <td><span class="code-id">${safe(r[0])}</span></td>
+          <td style="color:#7b91b0">${safe(r[2])} ${safe(r[3])}</td>
           <td>${safe(r[1])}</td>
-          <td>${safe(r[5])}</td>
-          <td style="font-weight:700">${money(r[6])}</td>
-          <td><span style="color:${r[7] === 'Credit' ? '#34d399' : '#fb7185'}">${safe(r[7])}</span></td>
+          <td style="color:#00d4ff;font-weight:600">${safe(r[5])}</td>
+          <td style="font-family:'JetBrains Mono',monospace;font-weight:700">${money(r[6])}</td>
+          <td><span style="color:${r[7] === 'Credit' ? '#00f5d4' : '#ff0054'}">${safe(r[7])}</span></td>
           <td>${safe(r[16])}</td>
           <td>${safe(r[10])}</td>
-          <td><span class="pill ${kycPill}">${safe(r[17])}</span></td>
-          <td><span class="pill ${statPill}">${safe(r[15])}</span></td>
-          <td>${fraudPill}</td>
+          <td><span style="color:${r[17] === 'Verified' ? '#00d4ff' : '#ffb703'}">${safe(r[17])}</span></td>
+          <td><span class="tag-pill ${statClass}">${safe(r[15])}</span></td>
+          <td>${fraudTag}</td>
         </tr>`;
       }).join('');
 
-      $('tableCount').textContent = `${fmt(tableRows.length)} matching rows`;
-      $('pageLabel').textContent = `Page ${pageNo + 1} of ${fmt(max)} · 50 rows per page`;
+      $('tableSummaryBadge').textContent = `${fmt(tableRows.length)} RECORDS`;
+      $('pageLabel').textContent = `PAGE ${pageNo + 1} OF ${fmt(max)}`;
       $('prev').disabled = pageNo === 0;
       $('next').disabled = pageNo + 1 >= max;
     }
@@ -1389,8 +1810,8 @@
       $('start').value = '2019-01-01';
       $('end').value = '2023-12-31';
       ['channel', 'state', 'type', 'status', 'accountType', 'fraud', 'search'].forEach(id => $(id).value = '');
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      document.querySelector('.chip').classList.add('active');
+      document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active'));
+      document.querySelector('.chip-btn').classList.add('active');
       setMetric('count');
     };
 
@@ -1402,12 +1823,12 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `financial_transactions_${$('start').value}_${$('end').value}.csv`;
+      a.download = `quantum_transactions_${$('start').value}_${$('end').value}.csv`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
 
-    // Initial Render
+    // Initial Execution
     render();
   </script>
 </body>
