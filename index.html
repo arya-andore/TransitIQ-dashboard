@@ -1,21 +1,1414 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Financial Transactions | Analytics</title><script src="plotly.min.js"></script><script src="data.js"></script><style>
-*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:#14243b;font-family:Inter,Arial,sans-serif}header{background:#10243e;color:white;padding:30px 36px}header small{color:#64ddce;letter-spacing:2px;font-weight:bold}h1{margin:9px 0;font-size:30px}header p{color:#b6c6da;margin:5px 0;font-size:14px}.badge{float:right;background:#253e59;border:1px solid #476079;padding:8px 12px;border-radius:20px;font-size:12px}main{max-width:1600px;margin:auto;padding:24px}.filters,.panel,.card,.note{background:white;border:1px solid #e0e7f0;border-radius:12px}.filters{padding:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:end;position:relative}.field{flex:1;min-width:130px}label{font-size:11px;text-transform:uppercase;color:#63728a;font-weight:bold;display:block;margin-bottom:7px}select,input,button{font:inherit;border:1px solid #d5dfeb;border-radius:6px;padding:9px;background:white;color:#223650}select,input{width:100%;font-size:12px}button{cursor:pointer;font-size:12px;font-weight:bold}button.primary{background:#116e75;color:white;border-color:#116e75}.toolbar{display:flex;justify-content:space-between;align-items:center;margin:18px 0;color:#65758b;font-size:12px;gap:12px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{padding:19px}.card label{font-size:11px}.value{font-size:27px;font-weight:bold;margin:9px 0}.sub{font-size:11px;color:#748198}.card.accent{border-top:3px solid #0f9990}.card.risk{border-top:3px solid #ed8a59}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}.panel{padding:17px;min-width:0}.panel.wide{grid-column:1/-1}.panel h2{font-size:15px;margin:0 0 5px}.panel p{font-size:11px;color:#738096;margin:0 0 10px}.chart{height:300px}.tablewrap{overflow:auto;max-height:450px}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:12px}th{position:sticky;top:0;background:#eaf0f7;text-align:left}th,td{padding:11px;border-bottom:1px solid #e8eef5}.pill{border-radius:9px;background:#e8f6f2;color:#14745b;padding:3px 7px}.pill.alert{background:#fff0e8;color:#b25127}.note{margin-top:18px;padding:18px;font-size:12px;color:#607087;line-height:1.7}.tabletools{display:flex;gap:15px;align-items:center;margin-bottom:12px}.tabletools input{max-width:360px}#empty{display:none;color:#b25127;margin:16px 0}.footer{text-align:center;color:#748198;font-size:11px;padding:22px}@media(max-width:850px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.badge{float:none;display:inline-block;margin-bottom:14px}header{padding:24px}main{padding:14px}.value{font-size:23px}}@media(max-width:450px){.kpis{grid-template-columns:1fr}}
-</style></head><body><header><span class="badge">SYNTHETIC DATA · 75,000 RECORDS</span><small>TRANSACTION INTELLIGENCE</small><h1>Financial Transactions Dashboard</h1><p>Explore transaction activity, operational performance and fraud flags · 01 Jan 2019 – 31 Dec 2023</p></header><main>
-<section class="filters"><div class="field"><label>From date</label><input id="start" type="date" value="2019-01-01" min="2019-01-01" max="2023-12-31"></div><div class="field"><label>To date</label><input id="end" type="date" value="2023-12-31" min="2019-01-01" max="2023-12-31"></div><div class="field"><label>Channel</label><select id="channel"></select></div><div class="field"><label>State</label><select id="state"></select></div><div class="field"><label>Transaction type</label><select id="type"></select></div><div class="field"><label>Status</label><select id="status"></select></div><div class="field"><label>Fraud flag</label><select id="fraud"><option value="">All flags</option><option value="1">Flagged</option><option value="0">Not flagged</option></select></div><button id="reset">Reset</button></section>
-<div class="toolbar"><span id="scope"></span><div><label style="display:inline;margin-right:8px">Chart metric</label><select id="metric" style="width:150px"><option value="count">Transaction count</option><option value="amount">Transaction amount</option></select></div></div><div id="empty">No matching transactions. Adjust your filters.</div><section class="kpis" id="kpis"></section>
-<section class="grid"><div class="panel wide"><h2>Monthly transaction activity</h2><p>Includes every status in the selected scope. Use chart controls to zoom or save an image.</p><div class="chart" id="trend"></div></div><div class="panel"><h2>Transaction status</h2><p>Operational outcomes across the filtered records</p><div class="chart" id="statusChart"></div></div><div class="panel"><h2>Channel mix</h2><p>Distribution by transaction channel</p><div class="chart" id="channelChart"></div></div><div class="panel"><h2>Merchant categories</h2><p>Top 10 categories ranked by the selected metric</p><div class="chart" id="merchantChart"></div></div><div class="panel"><h2>State distribution</h2><p>Ranked by the selected metric</p><div class="chart" id="stateChart"></div></div><div class="panel"><h2>Credit vs. debit</h2><p>Recorded direction; all selected statuses included</p><div class="chart" id="directionChart"></div></div><div class="panel"><h2>Hourly fraud flag rate</h2><p>Flagged transactions ÷ all transactions in each hour; hover for sample size</p><div class="chart" id="hourChart"></div></div></section>
-<section class="panel" style="margin-top:18px"><h2>Transaction explorer</h2><p>Search applies to the table and CSV export only; dashboard filters apply throughout.</p><div class="tabletools"><input id="search" placeholder="Search ID, customer, category, state…"><button class="primary" id="download">Export matching rows (CSV)</button><span id="tableCount" style="font-size:11px;color:#748198"></span></div><div class="tablewrap"><table><thead><tr><th>Transaction ID</th><th>Date</th><th>Customer</th><th>Type</th><th>Amount</th><th>Direction</th><th>Channel</th><th>State</th><th>Status</th><th>Fraud flag</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="toolbar"><button id="prev">← Previous</button><span id="pageLabel"></span><button id="next">Next →</button></div></section>
-<div class="note"><strong>Definitions & data quality</strong><br>Amounts are shown in <strong>source currency units</strong>: no currency field is supplied. Transaction amount totals are gross recorded amounts, not revenue or settled cash flow, and include failed, reversed and pending transactions unless filtered. Fraud is the supplied <code>is_fraud</code> flag, not a model prediction; flagged amount does not mean confirmed loss. Success and fraud rates use transaction counts. Unique customers are distinct IDs in the selected scope.<br>All 75,000 rows and 20 source columns are loaded. Transaction IDs are unique. No missing values except 35,735 loan-type cells; all correspond to records with <code>has_loan = 0</code>. Account balances and EMI values are not summed because repeated customer-level observations could double-count exposure. Customer attributes may vary across synthetic records. This dashboard describes synthetic data and is not a live banking report.</div><div class="footer">FINANCIAL ANALYTICS · Interactive dashboard · All analysis stays in your browser</div></main>
-<script>
-const $=id=>document.getElementById(id), idx=Object.fromEntries(COLS.map((c,i)=>[c,i]));let filtered=DATA,tableRows=DATA,pageNo=0;const pageSize=100;const fmt=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n),money=n=>new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n),compact=n=>new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:2}).format(n),pct=n=>(n*100).toFixed(2)+'%';const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const mapping={channel:'channel',state:'state',type:'transaction_type',status:'transaction_status'};for(const [id,col] of Object.entries(mapping)){const vals=[...new Set(DATA.map(r=>r[idx[col]]))].sort();$(id).innerHTML='<option value="">All</option>'+vals.map(v=>'<option value="'+safe(v)+'">'+safe(v.replaceAll('_',' '))+'</option>').join('')}
-const colors=['#168d91','#4d72b8','#ed9b54','#c35b72','#9276ba','#79b5be'];const config={responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']};const base={font:{family:'Arial',size:11,color:'#66758b'},paper_bgcolor:'transparent',plot_bgcolor:'transparent',margin:{l:65,r:20,t:20,b:45},colorway:colors,xaxis:{gridcolor:'#edf1f7'},yaxis:{gridcolor:'#edf1f7'},hoverlabel:{bgcolor:'#142b46',font:{color:'white'}}};function plot(id,data,extra={}){Plotly.react(id,data,{...base,...extra},config)}
-function group(col){let o={};for(let r of filtered){let k=r[idx[col]];o[k]=(o[k]||0)+($('metric').value==='amount'?r[idx.transaction_amount]:1)}return Object.entries(o)}
-function bars(id,col,limit=20){let e=group(col).sort((a,b)=>b[1]-a[1]).slice(0,limit).reverse();plot(id,[{type:'bar',orientation:'h',y:e.map(x=>String(x[0]).replaceAll('_',' ')),x:e.map(x=>x[1]),marker:{color:'#168d91'},hovertemplate:'%{y}: %{x:,.2f}<extra></extra>'}],{margin:{l:115,r:25,t:10,b:40},xaxis:{...base.xaxis,title:{text:$('metric').value==='amount'?'Amount · source units':'Transaction count'}},yaxis:{automargin:true}})}
-function render(){let start=$('start').value,end=$('end').value;filtered=DATA.filter(r=>(!start||r[2]>=start)&&(!end||r[2]<=end)&&Object.entries(mapping).every(([id,col])=>!$(id).value||r[idx[col]]===$(id).value)&&($('fraud').value===''||r[idx.is_fraud]===Number($('fraud').value)));let n=filtered.length,total=0,fraud=0,fraudAmt=0,success=0,successAmt=0,customers=new Set();for(let r of filtered){let a=r[idx.transaction_amount];total+=a;customers.add(r[1]);if(r[idx.is_fraud]){fraud++;fraudAmt+=a}if(r[idx.transaction_status]==='Success'){success++;successAmt+=a}}
-$('scope').textContent=fmt(n)+' of 75,000 records · '+(start||'Earliest')+' → '+(end||'Latest');$('empty').style.display=n?'none':'block';let k=[['Transactions',fmt(n),'All selected statuses','accent'],['Gross transaction amount',compact(total),money(total)+' source units','accent'],['Average transaction',n?money(total/n):'—','Source units per transaction',''],['Unique customers',fmt(customers.size),'Distinct customer IDs',''],['Success rate',n?pct(success/n):'—',fmt(success)+' successful transactions','accent'],['Successful amount',compact(successAmt),money(successAmt)+' source units',''],['Fraud flag rate',n?pct(fraud/n):'—',fmt(fraud)+' flagged transactions','risk'],['Flagged amount',compact(fraudAmt),money(fraudAmt)+' source units · not confirmed loss','risk']];$('kpis').innerHTML=k.map(x=>'<div class="card '+x[3]+'"><label>'+x[0]+'</label><div class="value">'+x[1]+'</div><div class="sub">'+x[2]+'</div></div>').join('');let months={};for(let r of filtered){let m=r[2].slice(0,7);months[m]=(months[m]||0)+($('metric').value==='amount'?r[6]:1)}let dates=Object.keys(months).sort();if(start&&end&&start<=end){dates=[];let dt=new Date(start.slice(0,7)+'-01T00:00:00Z'),last=end.slice(0,7);while(dt.toISOString().slice(0,7)<=last){dates.push(dt.toISOString().slice(0,7));dt.setUTCMonth(dt.getUTCMonth()+1)}}plot('trend',[{x:dates,y:dates.map(d=>months[d]||0),type:'scatter',mode:'lines',fill:'tozeroy',fillcolor:'rgba(22,141,145,.10)',line:{color:'#168d91',width:3},hovertemplate:'%{x}<br>%{y:,.2f}<extra></extra>'}],{yaxis:{...base.yaxis,title:{text:$('metric').value==='amount'?'Amount · source units':'Transaction count'}},margin:{l:75,r:20,t:15,b:40}});
-let s=group('transaction_status');plot('statusChart',[{type:'pie',labels:s.map(x=>x[0]),values:s.map(x=>x[1]),hole:.65,marker:{colors:s.map(x=>({Success:'#168d91',Failed:'#cc6170',Reversed:'#e6a14a',Pending:'#8f9caf'}[x[0]]))},textinfo:'percent',hovertemplate:'%{label}: %{value:,.2f}<br>%{percent}<extra></extra>'}],{margin:{l:15,r:15,t:10,b:15},legend:{orientation:'h',y:-.05},xaxis:undefined,yaxis:undefined});bars('channelChart','channel');bars('merchantChart','merchant_category',10);bars('stateChart','state');bars('directionChart','transaction_direction');let hours=Array.from({length:24},()=>[0,0]);for(let r of filtered){hours[r[19]][0]++;hours[r[19]][1]+=r[18]}plot('hourChart',[{type:'bar',x:hours.map((_,i)=>i),y:hours.map(h=>h[0]?100*h[1]/h[0]:null),customdata:hours.map(h=>[h[0],h[1]]),marker:{color:'#e29a5b'},hovertemplate:'Hour %{x}:00<br>Fraud rate: %{y:.2f}%<br>Transactions: %{customdata[0]:,}<br>Flagged: %{customdata[1]:,}<extra></extra>'}],{xaxis:{title:{text:'Hour of day'},dtick:3},yaxis:{gridcolor:'#edf1f7',title:{text:'Flag rate (%)'},rangemode:'tozero'}});pageNo=0;searchTable()}
-function searchTable(){let q=$('search').value.toLowerCase().trim();tableRows=q?filtered.filter(r=>r.some(v=>String(v??'').toLowerCase().includes(q))):filtered;pageNo=0;renderTable()}
-function renderTable(){let max=Math.max(1,Math.ceil(tableRows.length/pageSize));pageNo=Math.min(pageNo,max-1);$('tbody').innerHTML=tableRows.slice(pageNo*pageSize,(pageNo+1)*pageSize).map(r=>'<tr>'+[r[0],r[2],r[1],r[5],money(r[6]),r[7],r[16],r[10]].map(v=>'<td>'+safe(v)+'</td>').join('')+'<td><span class="pill '+(r[15]!=='Success'?'alert':'')+'">'+safe(r[15])+'</span></td><td>'+(r[18]?'<span class="pill alert">Flagged</span>':'Not flagged')+'</td></tr>').join('');$('tableCount').textContent=fmt(tableRows.length)+' matching rows';$('pageLabel').textContent='Page '+(pageNo+1)+' of '+fmt(max)+' · 100 rows per page';$('prev').disabled=pageNo===0;$('next').disabled=pageNo+1>=max}
-for(let id of ['start','end','channel','state','type','status','fraud','metric'])$(id).addEventListener('change',render);$('search').addEventListener('input',searchTable);$('prev').onclick=()=>{pageNo--;renderTable()};$('next').onclick=()=>{pageNo++;renderTable()};$('reset').onclick=()=>{$('start').value='2019-01-01';$('end').value='2023-12-31';for(let id of ['channel','state','type','status','fraud','search'])$(id).value='';$('metric').value='count';render()};$('download').onclick=()=>{const cell=v=>'"'+String(v??'').replaceAll('"','""')+'"';let csv='\ufeff'+[COLS,...tableRows].map(r=>r.map(cell).join(',')).join('\r\n');let url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),a=document.createElement('a');a.href=url;a.download='filtered_transactions.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};render();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Financial Transactions | Advanced Analytics & Visualization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="plotly.min.js"></script>
+  <script src="data.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 24, 38, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.12);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-cyan: #06b6d4;
+      --accent-teal: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-indigo: #6366f1;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --glass-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: radial-gradient(circle at 15% 15%, #131c31 0%, #080c14 100%);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      padding-bottom: 50px;
+    }
+
+    header {
+      background: rgba(11, 15, 25, 0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 18px 32px;
+    }
+
+    .header-content {
+      max-width: 1680px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #06b6d4, #6366f1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+      font-weight: 800;
+      color: white;
+      font-size: 20px;
+    }
+
+    .title-group small {
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .title-group h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .badge.live {
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    main {
+      max-width: 1680px;
+      margin: 24px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Filters Section */
+    .filter-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--glass-glow);
+    }
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .filter-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .filter-header-left h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quick-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover, .chip.active {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--accent-cyan);
+      color: #38bdf8;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+    }
+
+    select, input {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.25);
+    }
+
+    .btn {
+      font-family: inherit;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      height: 38px;
+    }
+
+    .btn-reset {
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-reset:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    /* Metric Switcher Toolbar */
+    .toolbar-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .scope-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .scope-highlight {
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    .metric-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: #0ea5e9;
+      color: white;
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+    }
+
+    /* KPI Cards */
+    .kpis-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--card-hover);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--card-accent, #64748b);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 8px 0 4px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* Section Headers */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--card-border);
+      margin-left: 10px;
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .charts-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .chart-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--glass-glow);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: border-color 0.2s ease;
+    }
+
+    .chart-panel:hover {
+      border-color: var(--card-hover);
+    }
+
+    .chart-panel.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .panel-header h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-tag {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .tag-pie { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .tag-bar { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .tag-trend { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-risk { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .panel-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .chart-container {
+      height: 310px;
+      width: 100%;
+    }
+
+    .chart-container.tall {
+      height: 360px;
+    }
+
+    /* Table Section */
+    .table-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--glass-glow);
+    }
+
+    .table-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .search-box {
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      max-height: 520px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    th {
+      background: #111827;
+      color: #94a3b8;
+      padding: 12px 16px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pill.success { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .pill.failed { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+    .pill.reversed { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .pill.pending { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+    .pill.fraud { background: rgba(244, 63, 94, 0.2); color: #fda4af; font-weight: 700; }
+    .pill.verified { background: rgba(6, 182, 212, 0.15); color: #38bdf8; }
+
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Definitions Note */
+    .note-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.8;
+    }
+
+    .note-card strong {
+      color: #f1f5f9;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .kpis-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 850px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      header { padding: 16px 20px; }
+      main { padding: 0 16px; }
+    }
+
+    @media (max-width: 550px) {
+      .kpis-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <div class="brand-title">
+        <div class="logo-icon">📊</div>
+        <div class="title-group">
+          <small>Fintech Intelligence Suite</small>
+          <h1>Financial Transactions Dashboard</h1>
+        </div>
+      </div>
+      <div class="header-badges">
+        <div class="badge live"><span class="badge-dot"></span> 75,000 Records Online</div>
+        <div class="badge">01 Jan 2019 – 31 Dec 2023</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Filters Section -->
+    <section class="filter-card">
+      <div class="filter-header">
+        <div class="filter-header-left">
+          <h3>⚡ Filter Scope & Presets</h3>
+          <div class="quick-chips">
+            <button class="chip active" onclick="setYear('all')">All Time</button>
+            <button class="chip" onclick="setYear('2023')">2023</button>
+            <button class="chip" onclick="setYear('2022')">2022</button>
+            <button class="chip" onclick="setYear('2021')">2021</button>
+            <button class="chip" onclick="setYear('2020')">2020</button>
+            <button class="chip" onclick="setYear('2019')">2019</button>
+          </div>
+        </div>
+        <button class="btn btn-reset" id="reset">Reset Filters</button>
+      </div>
+
+      <div class="filters-grid">
+        <div class="field">
+          <label>From Date</label>
+          <input id="start" type="date" value="2019-01-01" min="2019-01-01" max="2023-12-31">
+        </div>
+        <div class="field">
+          <label>To Date</label>
+          <input id="end" type="date" value="2023-12-31" min="2019-01-01" max="2023-12-31">
+        </div>
+        <div class="field">
+          <label>Channel</label>
+          <select id="channel"></select>
+        </div>
+        <div class="field">
+          <label>State</label>
+          <select id="state"></select>
+        </div>
+        <div class="field">
+          <label>Payment Method</label>
+          <select id="type"></select>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="status"></select>
+        </div>
+        <div class="field">
+          <label>Account Type</label>
+          <select id="accountType">
+            <option value="">All Accounts</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fraud Flag</label>
+          <select id="fraud">
+            <option value="">All Flags</option>
+            <option value="1">Flagged Only</option>
+            <option value="0">Not Flagged</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolbar & Metric Switcher -->
+    <div class="toolbar-bar">
+      <span class="scope-text" id="scope">Loading transactions...</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Chart Value Metric:</span>
+        <div class="metric-toggle">
+          <button class="toggle-btn active" id="btnCount" onclick="setMetric('count')">Transaction Count</button>
+          <button class="toggle-btn" id="btnAmount" onclick="setMetric('amount')">Volume Amount</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Summary Ribbon -->
+    <section class="kpis-grid" id="kpis"></section>
+
+    <!-- SECTION 1: MACRO TRENDS & TIME VELOCITY -->
+    <div class="section-title">📈 Temporal Velocity & Trends</div>
+    <section class="charts-grid">
+      <div class="chart-panel full-width">
+        <div class="panel-header">
+          <h2>Monthly Transaction Trajectory</h2>
+          <span class="panel-tag tag-trend">Area & Spline</span>
+        </div>
+        <p class="panel-desc">Longitudinal monthly progression across all selected statuses and parameters</p>
+        <div class="chart-container tall" id="trend"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Day of Week Velocity</h2>
+          <span class="panel-tag tag-bar">Vertical Bar</span>
+        </div>
+        <p class="panel-desc">Transaction frequency and capital volume distributed from Monday through Sunday</p>
+        <div class="chart-container" id="dayOfWeekChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>24-Hour Fraud Flag Rate Curve</h2>
+          <span class="panel-tag tag-risk">Risk Heat Bar</span>
+        </div>
+        <p class="panel-desc">Percentage of transactions flagged as fraudulent by time of day (00:00 - 23:00)</p>
+        <div class="chart-container" id="hourChart"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: PORTFOLIO COMPOSITION & STATUS (PIE & DONUT CHARTS) -->
+    <div class="section-title">🥧 Portfolio Composition & Distribution (Pie & Donut Charts)</div>
+    <section class="charts-grid-3">
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Transaction Status Outcomes</h2>
+          <span class="panel-tag tag-pie">Donut Chart</span>
+        </div>
+        <p class="panel-desc">Operational ratio of Success, Failed, Reversed & Pending transactions</p>
+        <div class="chart-container" id="statusChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Account Types Breakdown</h2>
+          <span class="panel-tag tag-pie">Donut Chart</span>
+        </div>
+        <p class="panel-desc">Distribution across Savings, Current, Salary, Fixed Deposit & NRI accounts</p>
+        <div class="chart-container" id="accountTypeChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>KYC Verification Compliance</h2>
+          <span class="panel-tag tag-pie">Donut Chart</span>
+        </div>
+        <p class="panel-desc">Compliance breakdown: Verified, Pending, and Expired customer KYC status</p>
+        <div class="chart-container" id="kycChart"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: COMMERCIAL & CHANNEL BENCHMARKS (BAR CHARTS & BAR GRAPHS) -->
+    <div class="section-title">📊 Commercial & Rail Benchmarks (Bar Charts)</div>
+    <section class="charts-grid">
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Top 10 Merchant Categories</h2>
+          <span class="panel-tag tag-bar">Horizontal Bar</span>
+        </div>
+        <p class="panel-desc">Primary spending categories ranked by active metric</p>
+        <div class="chart-container" id="merchantChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Payment Methods / Rail Mix</h2>
+          <span class="panel-tag tag-bar">Horizontal Bar</span>
+        </div>
+        <p class="panel-desc">Volume split across UPI, NEFT, IMPS, RTGS, Cards, and Net Banking</p>
+        <div class="chart-container" id="transTypeChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Channel Distribution Mix</h2>
+          <span class="panel-tag tag-bar">Horizontal Bar</span>
+        </div>
+        <p class="panel-desc">Interactions across Mobile App, Branch, POS, Web, ATM, and APIs</p>
+        <div class="chart-container" id="channelChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>State Geographic Distribution</h2>
+          <span class="panel-tag tag-bar">Horizontal Bar</span>
+        </div>
+        <p class="panel-desc">Top 10 regional geographic areas by transacting activity</p>
+        <div class="chart-container" id="stateChart"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: RISK, CREDIT & CAPITAL FLOWS -->
+    <div class="section-title">🛡️ Risk, Credit & Financial Exposure (Distribution Graphs)</div>
+    <section class="charts-grid-3">
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Credit Score Risk Tiers</h2>
+          <span class="panel-tag tag-bar">Vertical Bar</span>
+        </div>
+        <p class="panel-desc">Customer credit score tiers: Poor (&lt;580) to Exceptional (800+)</p>
+        <div class="chart-container" id="creditTierChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Transaction Size Buckets</h2>
+          <span class="panel-tag tag-bar">Vertical Bar</span>
+        </div>
+        <p class="panel-desc">Distribution by ticket size (&lt;1K, 1-5K, 5-15K, 15-50K, 50-100K, 100K+)</p>
+        <div class="chart-container" id="amountBucketChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Loan Distribution by Type</h2>
+          <span class="panel-tag tag-bar">Vertical Bar</span>
+        </div>
+        <p class="panel-desc">Active loan types across borrowers with average monthly EMI</p>
+        <div class="chart-container" id="loanTypeChart"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: CAPITAL DIRECTION -->
+    <section class="charts-grid">
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Capital Direction: Credit vs. Debit</h2>
+          <span class="panel-tag tag-pie">Donut Chart</span>
+        </div>
+        <p class="panel-desc">Comparison between incoming credit cash flows and debit outflows</p>
+        <div class="chart-container" id="directionChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h2>Fraud Flags by Merchant Category</h2>
+          <span class="panel-tag tag-risk">Horizontal Bar</span>
+        </div>
+        <p class="panel-desc">Total flagged fraud transactions across top commercial categories</p>
+        <div class="chart-container" id="fraudCategoryChart"></div>
+      </div>
+    </section>
+
+    <!-- Transaction Explorer Table -->
+    <section class="table-panel">
+      <div class="panel-header">
+        <h2>📑 Transaction Explorer & Deep Dive</h2>
+        <span id="tableCount" class="badge">0 matching records</span>
+      </div>
+      <p class="panel-desc">Perform granular multi-column keyword searches, inspect individual customer records, or export data to CSV.</p>
+
+      <div class="table-tools">
+        <div class="search-box">
+          <input id="search" placeholder="Search Transaction ID, Customer, Category, State, Type...">
+        </div>
+        <button class="btn btn-primary" id="download">
+          <span>📥 Export Matching Rows (CSV)</span>
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Date & Time</th>
+              <th>Customer ID</th>
+              <th>Type / Method</th>
+              <th>Amount</th>
+              <th>Direction</th>
+              <th>Channel</th>
+              <th>State</th>
+              <th>KYC Status</th>
+              <th>Status</th>
+              <th>Fraud Flag</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination-bar">
+        <button class="btn btn-reset" id="prev">← Previous</button>
+        <span id="pageLabel">Page 1</span>
+        <button class="btn btn-reset" id="next">Next →</button>
+      </div>
+    </section>
+
+    <!-- Data Quality Notes -->
+    <div class="note-card">
+      <strong>Data Standards & Methodology:</strong> All 75,000 synthetic transaction records are loaded directly in-memory and evaluated client-side. Gross Transaction Amount reflects recorded gross turnover before settlement deductions. Fraud flags represent historical surveillance triggers rather than confirmed loss. EMI values correspond exclusively to accounts with active loan tags.
+    </div>
+
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const idx = Object.fromEntries(COLS.map((c, i) => [c, i]));
+    
+    let currentMetric = 'count';
+    let filtered = DATA;
+    let tableRows = DATA;
+    let pageNo = 0;
+    const pageSize = 50;
+
+    // Formatters
+    const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
+    const money = n => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+    const compact = n => new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(n);
+    const pct = n => (n * 100).toFixed(2) + '%';
+    const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // Populate Dynamic Filter Selects
+    const dynamicFilters = [
+      ['channel', 'channel'],
+      ['state', 'state'],
+      ['type', 'transaction_type'],
+      ['status', 'transaction_status'],
+      ['accountType', 'account_type']
+    ];
+
+    dynamicFilters.forEach(([domId, colName]) => {
+      const vals = [...new Set(DATA.map(r => r[idx[colName]]))].filter(Boolean).sort();
+      $(domId).innerHTML = '<option value="">All</option>' + vals.map(v => `<option value="${safe(v)}">${safe(String(v).replaceAll('_', ' '))}</option>`).join('');
+    });
+
+    // Theme Colors
+    const palette = {
+      cyan: '#06b6d4',
+      blue: '#3b82f6',
+      indigo: '#6366f1',
+      purple: '#a855f7',
+      teal: '#10b981',
+      amber: '#f59e0b',
+      rose: '#f43f5e',
+      slate: '#64748b',
+      donut: ['#06b6d4', '#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6', '#14b8a6']
+    };
+
+    const plotlyConfig = {
+      responsive: true,
+      displaylogo: false,
+      modeBarButtonsToRemove: ['lasso2d', 'select2d']
+    };
+
+    const plotlyDarkBase = {
+      font: { family: 'Plus Jakarta Sans, sans-serif', size: 11, color: '#94a3b8' },
+      paper_bgcolor: 'transparent',
+      plot_bgcolor: 'transparent',
+      margin: { l: 55, r: 25, t: 15, b: 35 },
+      xaxis: {
+        gridcolor: 'rgba(255, 255, 255, 0.05)',
+        zerolinecolor: 'rgba(255, 255, 255, 0.1)',
+        tickfont: { color: '#94a3b8' }
+      },
+      yaxis: {
+        gridcolor: 'rgba(255, 255, 255, 0.05)',
+        zerolinecolor: 'rgba(255, 255, 255, 0.1)',
+        tickfont: { color: '#94a3b8' }
+      },
+      hoverlabel: {
+        bgcolor: '#0f172a',
+        bordercolor: 'rgba(255, 255, 255, 0.15)',
+        font: { family: 'Plus Jakarta Sans, sans-serif', color: '#f8fafc', size: 11 }
+      }
+    };
+
+    function plot(id, data, layoutExtra = {}) {
+      Plotly.react(id, data, { ...plotlyDarkBase, ...layoutExtra }, plotlyConfig);
+    }
+
+    function setMetric(m) {
+      currentMetric = m;
+      $('btnCount').classList.toggle('active', m === 'count');
+      $('btnAmount').classList.toggle('active', m === 'amount');
+      render();
+    }
+
+    function setYear(y) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      if (y === 'all') {
+        $('start').value = '2019-01-01';
+        $('end').value = '2023-12-31';
+      } else {
+        $('start').value = `${y}-01-01`;
+        $('end').value = `${y}-12-31`;
+      }
+      render();
+    }
+
+    // Days mapping
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    function render() {
+      const start = $('start').value;
+      const end = $('end').value;
+      const channel = $('channel').value;
+      const state = $('state').value;
+      const type = $('type').value;
+      const status = $('status').value;
+      const accountType = $('accountType').value;
+      const fraudVal = $('fraud').value;
+
+      // Filter Dataset
+      filtered = DATA.filter(r => {
+        if (start && r[2] < start) return false;
+        if (end && r[2] > end) return false;
+        if (channel && r[idx.channel] !== channel) return false;
+        if (state && r[idx.state] !== state) return false;
+        if (type && r[idx.transaction_type] !== type) return false;
+        if (status && r[idx.transaction_status] !== status) return false;
+        if (accountType && r[idx.account_type] !== accountType) return false;
+        if (fraudVal !== '' && r[idx.is_fraud] !== Number(fraudVal)) return false;
+        return true;
+      });
+
+      const n = filtered.length;
+      $('scope').innerHTML = `<span class="scope-highlight">${fmt(n)}</span> of 75,000 records · ${start || '2019-01-01'} to ${end || '2023-12-31'}`;
+
+      // Single-pass aggregations for all charts & KPIs
+      let totalAmount = 0;
+      let fraudCount = 0;
+      let fraudAmount = 0;
+      let successCount = 0;
+      let successAmount = 0;
+      let loanCount = 0;
+      let uniqueCustomers = new Set();
+
+      const months = {};
+      const dayOfWeekCounts = [0, 0, 0, 0, 0, 0, 0];
+      const hours = Array.from({ length: 24 }, () => [0, 0]); // [total, fraud]
+      const statusAgg = {};
+      const accountAgg = {};
+      const kycAgg = {};
+      const merchantAgg = {};
+      const typeAgg = {};
+      const channelAgg = {};
+      const stateAgg = {};
+      const directionAgg = { Debit: 0, Credit: 0 };
+      const fraudCategoryAgg = {};
+      const loanTypes = {};
+      const creditTiers = { 'Poor (<580)': 0, 'Fair (580-669)': 0, 'Good (670-739)': 0, 'Very Good (740-799)': 0, 'Exceptional (800+)': 0 };
+      const amountBuckets = { '< 1K': 0, '1K - 5K': 0, '5K - 15K': 0, '15K - 50K': 0, '50K - 100K': 0, '100K+': 0 };
+
+      for (let i = 0; i < n; i++) {
+        const r = filtered[i];
+        const amt = r[idx.transaction_amount];
+        const isFraud = r[idx.is_fraud];
+        const stat = r[idx.transaction_status];
+        const acc = r[idx.account_type];
+        const kyc = r[idx.kyc_status];
+        const cat = r[idx.merchant_category];
+        const tType = r[idx.transaction_type];
+        const ch = r[idx.channel];
+        const st = r[idx.state];
+        const dir = r[idx.transaction_direction];
+        const hour = r[idx.transaction_hour];
+        const credit = r[idx.credit_score];
+        const hasLoan = r[idx.has_loan];
+        const lType = r[idx.loan_type];
+        const emi = r[idx.emi_amount] || 0;
+        const val = currentMetric === 'amount' ? amt : 1;
+
+        totalAmount += amt;
+        uniqueCustomers.add(r[idx.customer_id]);
+
+        if (isFraud) {
+          fraudCount++;
+          fraudAmount += amt;
+          fraudCategoryAgg[cat] = (fraudCategoryAgg[cat] || 0) + 1;
+        }
+
+        if (stat === 'Success') {
+          successCount++;
+          successAmount += amt;
+        }
+
+        // Monthly
+        const m = r[2].slice(0, 7);
+        months[m] = (months[m] || 0) + val;
+
+        // Day of week
+        const dIdx = new Date(r[2] + 'T00:00:00Z').getUTCDay();
+        dayOfWeekCounts[dIdx] += val;
+
+        // Hourly
+        if (hour >= 0 && hour < 24) {
+          hours[hour][0]++;
+          if (isFraud) hours[hour][1]++;
+        }
+
+        // Aggregations
+        statusAgg[stat] = (statusAgg[stat] || 0) + val;
+        accountAgg[acc] = (accountAgg[acc] || 0) + val;
+        kycAgg[kyc] = (kycAgg[kyc] || 0) + val;
+        merchantAgg[cat] = (merchantAgg[cat] || 0) + val;
+        typeAgg[tType] = (typeAgg[tType] || 0) + val;
+        channelAgg[ch] = (channelAgg[ch] || 0) + val;
+        stateAgg[st] = (stateAgg[st] || 0) + val;
+        if (dir in directionAgg) directionAgg[dir] += val;
+
+        // Credit Tiers
+        if (credit < 580) creditTiers['Poor (<580)']++;
+        else if (credit < 670) creditTiers['Fair (580-669)']++;
+        else if (credit < 740) creditTiers['Good (670-739)']++;
+        else if (credit < 800) creditTiers['Very Good (740-799)']++;
+        else creditTiers['Exceptional (800+)']++;
+
+        // Amount Buckets
+        if (amt < 1000) amountBuckets['< 1K']++;
+        else if (amt < 5000) amountBuckets['1K - 5K']++;
+        else if (amt < 15000) amountBuckets['5K - 15K']++;
+        else if (amt < 50000) amountBuckets['15K - 50K']++;
+        else if (amt < 100000) amountBuckets['50K - 100K']++;
+        else amountBuckets['100K+']++;
+
+        // Loans
+        if (hasLoan && lType) {
+          loanCount++;
+          if (!loanTypes[lType]) loanTypes[lType] = { count: 0, emiTotal: 0 };
+          loanTypes[lType].count++;
+          loanTypes[lType].emiTotal += emi;
+        }
+      }
+
+      // Render KPIs
+      const kpis = [
+        { label: 'Total Transactions', val: fmt(n), sub: `${fmt(uniqueCustomers.size)} unique customers`, accent: '#06b6d4' },
+        { label: 'Gross Volume', val: compact(totalAmount), sub: `${money(totalAmount)} units`, accent: '#3b82f6' },
+        { label: 'Avg Ticket Size', val: n ? money(totalAmount / n) : '—', sub: 'Per transaction', accent: '#6366f1' },
+        { label: 'Success Rate', val: n ? pct(successCount / n) : '—', sub: `${fmt(successCount)} successful`, accent: '#10b981' },
+        { label: 'Successful Volume', val: compact(successAmount), sub: `${pct(totalAmount ? successAmount / totalAmount : 0)} of volume`, accent: '#14b8a6' },
+        { label: 'Fraud Flag Rate', val: n ? pct(fraudCount / n) : '—', sub: `${fmt(fraudCount)} flagged records`, accent: '#f43f5e' },
+        { label: 'Flagged Exposure', val: compact(fraudAmount), sub: `${money(fraudAmount)} flagged units`, accent: '#fb7185' },
+        { label: 'Active Loan Borrowers', val: n ? pct(loanCount / n) : '—', sub: `${fmt(loanCount)} loan accounts`, accent: '#a855f7' }
+      ];
+
+      $('kpis').innerHTML = kpis.map(k => `
+        <div class="kpi-card" style="--card-accent: ${k.accent}">
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-value">${k.val}</div>
+          <div class="kpi-sub">${k.sub}</div>
+        </div>
+      `).join('');
+
+      // 1. Monthly Trend (Line / Area)
+      const sortedMonths = Object.keys(months).sort();
+      plot('trend', [{
+        x: sortedMonths,
+        y: sortedMonths.map(m => months[m]),
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: palette.cyan, width: 3, shape: 'spline' },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(6, 182, 212, 0.12)',
+        hovertemplate: '<b>%{x}</b><br>Volume: %{y:,.2f}<extra></extra>'
+      }], {
+        yaxis: { ...plotlyDarkBase.yaxis, title: { text: currentMetric === 'amount' ? 'Amount (Units)' : 'Transaction Count' } }
+      });
+
+      // 2. Day of Week (Vertical Bar)
+      plot('dayOfWeekChart', [{
+        x: DAYS,
+        y: dayOfWeekCounts,
+        type: 'bar',
+        marker: { color: [palette.blue, palette.cyan, palette.indigo, palette.purple, palette.teal, palette.amber, palette.rose] },
+        hovertemplate: '<b>%{x}</b>: %{y:,.2f}<extra></extra>'
+      }], {
+        xaxis: { ...plotlyDarkBase.xaxis, title: { text: 'Day of Week' } },
+        yaxis: { ...plotlyDarkBase.yaxis, title: { text: currentMetric === 'amount' ? 'Amount' : 'Count' } }
+      });
+
+      // 3. Hourly Fraud Curve (Vertical Bar)
+      plot('hourChart', [{
+        x: hours.map((_, h) => `${h}:00`),
+        y: hours.map(h => h[0] ? (100 * h[1] / h[0]) : 0),
+        customdata: hours,
+        type: 'bar',
+        marker: { color: palette.rose },
+        hovertemplate: '<b>Hour %{x}</b><br>Fraud Rate: %{y:.2f}%<br>Flagged: %{customdata[1]:,}<br>Total: %{customdata[0]:,}<extra></extra>'
+      }], {
+        xaxis: { ...plotlyDarkBase.xaxis, dtick: 2, title: { text: 'Hour of Day (24h)' } },
+        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Fraud Rate (%)' }, rangemode: 'tozero' }
+      });
+
+      // 4. Status Outcomes (Donut)
+      const statusKeys = Object.keys(statusAgg);
+      plot('statusChart', [{
+        type: 'pie',
+        labels: statusKeys,
+        values: statusKeys.map(k => statusAgg[k]),
+        hole: 0.65,
+        marker: {
+          colors: statusKeys.map(k => ({ Success: '#10b981', Failed: '#f43f5e', Reversed: '#f59e0b', Pending: '#94a3b8' }[k] || '#64748b'))
+        },
+        textinfo: 'percent',
+        hovertemplate: '<b>%{label}</b><br>%{value:,.2f} (%{percent})<extra></extra>'
+      }], {
+        margin: { l: 15, r: 15, t: 10, b: 15 },
+        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
+      });
+
+      // 5. Account Types (Donut)
+      const accKeys = Object.keys(accountAgg);
+      plot('accountTypeChart', [{
+        type: 'pie',
+        labels: accKeys,
+        values: accKeys.map(k => accountAgg[k]),
+        hole: 0.65,
+        marker: { colors: palette.donut },
+        textinfo: 'percent',
+        hovertemplate: '<b>%{label}</b><br>%{value:,.2f} (%{percent})<extra></extra>'
+      }], {
+        margin: { l: 15, r: 15, t: 10, b: 15 },
+        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
+      });
+
+      // 6. KYC Compliance (Donut)
+      const kycKeys = Object.keys(kycAgg);
+      plot('kycChart', [{
+        type: 'pie',
+        labels: kycKeys,
+        values: kycKeys.map(k => kycAgg[k]),
+        hole: 0.65,
+        marker: {
+          colors: kycKeys.map(k => ({ Verified: '#06b6d4', Pending: '#f59e0b', Expired: '#f43f5e' }[k] || '#64748b'))
+        },
+        textinfo: 'percent',
+        hovertemplate: '<b>%{label}</b><br>%{value:,.2f} (%{percent})<extra></extra>'
+      }], {
+        margin: { l: 15, r: 15, t: 10, b: 15 },
+        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
+      });
+
+      // Helper for horizontal bar charts
+      function plotHBar(id, aggObj, limit = 10, color = palette.cyan) {
+        const sorted = Object.entries(aggObj).sort((a, b) => b[1] - a[1]).slice(0, limit).reverse();
+        plot(id, [{
+          type: 'bar',
+          orientation: 'h',
+          y: sorted.map(x => String(x[0]).replaceAll('_', ' ')),
+          x: sorted.map(x => x[1]),
+          marker: { color },
+          hovertemplate: '<b>%{y}</b>: %{x:,.2f}<extra></extra>'
+        }], {
+          margin: { l: 120, r: 25, t: 10, b: 35 },
+          xaxis: { ...plotlyDarkBase.xaxis, title: { text: currentMetric === 'amount' ? 'Amount (Units)' : 'Count' } },
+          yaxis: { automargin: true, tickfont: { color: '#94a3b8' } }
+        });
+      }
+
+      // 7. Merchant Categories (H-Bar)
+      plotHBar('merchantChart', merchantAgg, 10, palette.cyan);
+
+      // 8. Payment Types (H-Bar)
+      plotHBar('transTypeChart', typeAgg, 10, palette.indigo);
+
+      // 9. Channel Mix (H-Bar)
+      plotHBar('channelChart', channelAgg, 10, palette.purple);
+
+      // 10. States (H-Bar)
+      plotHBar('stateChart', stateAgg, 10, palette.teal);
+
+      // 11. Credit Score Tiers (Vertical Bar)
+      plot('creditTierChart', [{
+        x: Object.keys(creditTiers),
+        y: Object.values(creditTiers),
+        type: 'bar',
+        marker: { color: ['#f43f5e', '#f59e0b', '#3b82f6', '#06b6d4', '#10b981'] },
+        hovertemplate: '<b>%{x}</b><br>Transactions: %{y:,}<extra></extra>'
+      }], {
+        xaxis: { ...plotlyDarkBase.xaxis, tickangle: -20 },
+        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Count' } }
+      });
+
+      // 12. Amount Buckets (Vertical Bar)
+      plot('amountBucketChart', [{
+        x: Object.keys(amountBuckets),
+        y: Object.values(amountBuckets),
+        type: 'bar',
+        marker: { color: palette.blue },
+        hovertemplate: '<b>%{x}</b>: %{y:,} transactions<extra></extra>'
+      }], {
+        xaxis: { ...plotlyDarkBase.xaxis, tickangle: -20 },
+        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Count' } }
+      });
+
+      // 13. Loan Types (Vertical Bar)
+      const lKeys = Object.keys(loanTypes);
+      plot('loanTypeChart', [{
+        x: lKeys,
+        y: lKeys.map(k => loanTypes[k].count),
+        type: 'bar',
+        name: 'Loan Count',
+        marker: { color: palette.purple },
+        hovertemplate: '<b>%{x}</b>: %{y:,} loans<extra></extra>'
+      }], {
+        xaxis: { ...plotlyDarkBase.xaxis },
+        yaxis: { ...plotlyDarkBase.yaxis, title: { text: 'Loans' } }
+      });
+
+      // 14. Credit vs Debit (Donut)
+      plot('directionChart', [{
+        type: 'pie',
+        labels: ['Debit', 'Credit'],
+        values: [directionAgg.Debit, directionAgg.Credit],
+        hole: 0.65,
+        marker: { colors: ['#f43f5e', '#10b981'] },
+        textinfo: 'percent',
+        hovertemplate: '<b>%{label}</b>: %{value:,.2f} (%{percent})<extra></extra>'
+      }], {
+        margin: { l: 15, r: 15, t: 10, b: 15 },
+        legend: { orientation: 'h', y: -0.1, font: { color: '#94a3b8', size: 10 } }
+      });
+
+      // 15. Fraud by Category (H-Bar)
+      plotHBar('fraudCategoryChart', fraudCategoryAgg, 8, palette.rose);
+
+      searchTable();
+    }
+
+    function searchTable() {
+      const q = $('search').value.toLowerCase().trim();
+      tableRows = q ? filtered.filter(r => r.some(v => String(v ?? '').toLowerCase().includes(q))) : filtered;
+      pageNo = 0;
+      renderTable();
+    }
+
+    function renderTable() {
+      const max = Math.max(1, Math.ceil(tableRows.length / pageSize));
+      pageNo = Math.min(pageNo, max - 1);
+      
+      const slice = tableRows.slice(pageNo * pageSize, (pageNo + 1) * pageSize);
+      
+      $('tbody').innerHTML = slice.map(r => {
+        const statPill = r[15] === 'Success' ? 'success' : (r[15] === 'Failed' ? 'failed' : (r[15] === 'Reversed' ? 'reversed' : 'pending'));
+        const fraudPill = r[18] ? '<span class="pill fraud">⚠️ Flagged</span>' : '<span style="color:#64748b">Normal</span>';
+        const kycPill = r[17] === 'Verified' ? 'verified' : (r[17] === 'Expired' ? 'failed' : 'pending');
+
+        return `<tr>
+          <td><span style="font-family:'JetBrains Mono',monospace;color:#38bdf8">${safe(r[0])}</span></td>
+          <td>${safe(r[2])} ${safe(r[3])}</td>
+          <td>${safe(r[1])}</td>
+          <td>${safe(r[5])}</td>
+          <td style="font-weight:700">${money(r[6])}</td>
+          <td><span style="color:${r[7] === 'Credit' ? '#34d399' : '#fb7185'}">${safe(r[7])}</span></td>
+          <td>${safe(r[16])}</td>
+          <td>${safe(r[10])}</td>
+          <td><span class="pill ${kycPill}">${safe(r[17])}</span></td>
+          <td><span class="pill ${statPill}">${safe(r[15])}</span></td>
+          <td>${fraudPill}</td>
+        </tr>`;
+      }).join('');
+
+      $('tableCount').textContent = `${fmt(tableRows.length)} matching rows`;
+      $('pageLabel').textContent = `Page ${pageNo + 1} of ${fmt(max)} · 50 rows per page`;
+      $('prev').disabled = pageNo === 0;
+      $('next').disabled = pageNo + 1 >= max;
+    }
+
+    // Event Listeners
+    ['start', 'end', 'channel', 'state', 'type', 'status', 'accountType', 'fraud'].forEach(id => {
+      $(id).addEventListener('change', render);
+    });
+
+    $('search').addEventListener('input', searchTable);
+    $('prev').onclick = () => { pageNo--; renderTable(); };
+    $('next').onclick = () => { pageNo++; renderTable(); };
+
+    $('reset').onclick = () => {
+      $('start').value = '2019-01-01';
+      $('end').value = '2023-12-31';
+      ['channel', 'state', 'type', 'status', 'accountType', 'fraud', 'search'].forEach(id => $(id).value = '');
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      document.querySelector('.chip').classList.add('active');
+      setMetric('count');
+    };
+
+    // CSV Download
+    $('download').onclick = () => {
+      const cell = v => '"' + String(v ?? '').replaceAll('"', '""') + '"';
+      const csv = '\ufeff' + [COLS, ...tableRows].map(r => r.map(cell).join(',')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `financial_transactions_${$('start').value}_${$('end').value}.csv`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    // Initial Render
+    render();
+  </script>
+</body>
+</html>
