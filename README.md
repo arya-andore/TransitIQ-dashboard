@@ -1,19 +1,24 @@
-# Financial Transactions Dashboard
+# TransactIQ
 
-An interactive, zero-dependency analytics dashboard for financial transaction intelligence, operational monitoring, and fraud analysis.
+**TransactIQ** is an executive-grade, futuristic financial intelligence and transaction analytics HUD. It delivers real-time portfolio monitoring, capital velocity visualization, and operational fraud detection across 75,000 synthetic transaction records with zero server dependencies.
 
-## Features
-- **75,000 Records Analyzed**: Preloaded synthetic transactions spanning 2019 to 2023.
-- **KPI Metrics**: Real-time computation of gross volume, average transaction amount, customer count, success rate, and fraud flag rate.
-- **Plotly Visualizations**:
-  - Monthly transaction volume and amount timeline
-  - Transaction status distribution (Donut chart)
-  - Channel mix & payment rail analysis
-  - Top merchant categories
-  - Geographic state breakdown
-  - Directional cash flow (Credit vs. Debit)
-  - Hourly fraud rate analysis (24-hour pattern)
-- **Transaction Explorer**: Instant client-side search, 100-row pagination, and CSV export.
+## 🚀 Live Deployment
+- **Production URL**: [https://financialtransactionsdashboard.vercel.app](https://financialtransactionsdashboard.vercel.app)
+- **Repository**: [https://github.com/arya-andore/financial-transactions-dashboard](https://github.com/arya-andore/financial-transactions-dashboard)
 
-## Deployment
-Live on Vercel: [https://financialtransactionsdashboard.vercel.app](https://financialtransactionsdashboard.vercel.app)
+## ✨ Core Features
+- **75,000 In-Memory Transaction Records**: Preloaded client-side dataset spanning 01 Jan 2019 to 31 Dec 2023.
+- **Futuristic HUD Aesthetics**: Dark cyberpunk theme matching high-tech financial command centers with an icon navigation sidebar and luminous neon cyan/blue indicators.
+- **Macro Trends & Velocity**:
+  - Longitudinal monthly spline curve with area glow
+  - Multi-stream cash flow rhythm (Credit inflows vs Debit outflows)
+  - 24-hour fraud surveillance heat curve
+- **Portfolio & Risk Distributions**:
+  - Global/regional network hub map with state concentration indicators
+  - Demographics infographic tracking KYC compliance and settlement success
+  - Month-over-month progression via 5 circular radial progress dials
+  - 4-ring radial meters for key operational ratios (Success, Debit share, KYC verified, Fraud rate)
+  - Ranked horizontal merchant sector pill bars
+  - 4-step pipeline clearing milestones
+  - Semicircular system integrity arc speedometer
+- **Quantum Explorer Terminal**: Multi-column keyword search, status filtering, 50-row pagination, and one-click CSV archive export.

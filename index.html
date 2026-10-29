@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AETHER // Financial Intelligence Core</title>
+  <title>TransactIQ // Quantum Financial Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -954,7 +954,7 @@
 
   <!-- LEFT CYBERPUNK ICON SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo">◆</div>
+    <div class="sidebar-logo" title="TransactIQ">IQ</div>
     <nav class="nav-icons">
       <button class="nav-btn active" title="Overview" onclick="smoothScroll('top')">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -984,7 +984,7 @@
     <header class="hud-header">
       <div class="hud-title">
         <div class="sys-pill"><span class="dot-pulse"></span> ONLINE · LIVE CORE</div>
-        <h1>Financial Intelligence Quantum HUD</h1>
+        <h1>TransactIQ <span style="font-weight:400;color:var(--text-muted);font-size:13px;">// Financial Intelligence HUD</span></h1>
         <span class="sub" id="recordCountLabel">75,000 SYNTHETIC RECORDS</span>
       </div>
 
@@ -1823,7 +1823,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `quantum_transactions_${$('start').value}_${$('end').value}.csv`;
+      a.download = `transactiq_transactions_${$('start').value}_${$('end').value}.csv`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
