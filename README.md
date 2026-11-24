@@ -3,7 +3,8 @@
 **TransactIQ** is an executive-grade, futuristic financial intelligence and transaction analytics HUD. It delivers real-time portfolio monitoring, capital velocity visualization, and operational fraud detection across 75,000 synthetic transaction records with zero server dependencies.
 
 ## 🚀 Live Deployment
-- **Production URL**: [https://financialtransactionsdashboard.vercel.app](https://financialtransactionsdashboard.vercel.app)
+- **Production URL**: [https://transactiqdashboard.vercel.app/]
+- https://transactiqdashboard.vercel.app/
 - **Repository**: [https://github.com/arya-andore/financial-transactions-dashboard](https://github.com/arya-andore/financial-transactions-dashboard)
 
 ## ✨ Core Features
