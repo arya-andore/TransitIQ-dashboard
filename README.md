@@ -4,7 +4,6 @@
 
 ## 🚀 Live Deployment
 - **Production URL**: [https://transactiqdashboard.vercel.app/]
-- https://transactiqdashboard.vercel.app/
 - **Repository**: [https://github.com/arya-andore/financial-transactions-dashboard](https://github.com/arya-andore/financial-transactions-dashboard)
 
 ## ✨ Core Features
